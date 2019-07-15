@@ -1,0 +1,35 @@
+db2 export to MMS_XF_RECORD.ixf of ixf select * from MMS_XF_RECORD
+db2 export to MMS_XF_TYPE.ixf of ixf select * from MMS_XF_TYPE
+db2 export to SYS_ADVICE_INFO.ixf of ixf select * from SYS_ADVICE_INFO
+db2 export to SYS_ANNO_ACCE_INFO.ixf of ixf select * from SYS_ANNO_ACCE_INFO
+db2 export to SYS_ANNO_INFO.ixf of ixf select * from SYS_ANNO_INFO
+db2 export to SYS_ANNO_TYPE_INFO.ixf of ixf select * from SYS_ANNO_TYPE_INFO
+db2 export to SYS_BRANCH_INFO.ixf of ixf select * from SYS_BRANCH_INFO
+db2 export to SYS_MENU_INFO.ixf of ixf select * from SYS_MENU_INFO
+db2 export to SYS_MENU_ROLE_REL.ixf of ixf select * from SYS_MENU_ROLE_REL
+db2 export to SYS_OPERLOG_INFO.ixf of ixf select * from SYS_OPERLOG_INFO
+db2 export to SYS_PUBCODE_INFO.ixf of ixf select * from SYS_PUBCODE_INFO
+db2 export to SYS_ROLE_INFO.ixf of ixf select * from SYS_ROLE_INFO
+db2 export to SYS_TRIGGER_INFO.ixf of ixf select * from SYS_TRIGGER_INFO
+db2 export to SYS_USER_INFO.ixf of ixf select * from SYS_USER_INFO 
+db2 export to SYS_USER_ROLE.ixf of ixf select * from SYS_USER_ROLE
+db2 export to SYS_USER_ROLE_REL.ixf of ixf select * from SYS_USER_ROLE_REL
+
+
+
+db2 import from MMS_XF_RECORD.ixf                 of ixf replace_create into MMS_XF_RECORD         
+db2 import from MMS_XF_TYPE.ixf                 of ixf replace_create into MMS_XF_TYPE             
+db2 import from SYS_ADVICE_INFO.ixf                 of ixf replace_create into SYS_ADVICE_INFO           
+db2 import from SYS_ANNO_ACCE_INFO.ixf                 of ixf replace_create into SYS_ANNO_ACCE_INFO              
+db2 import from SYS_ANNO_INFO.ixf                 of ixf replace_create into SYS_ANNO_INFO             
+db2 import from SYS_ANNO_TYPE_INFO.ixf                 of ixf replace_create into SYS_ANNO_TYPE_INFO              
+db2 import from SYS_BRANCH_INFO.ixf                 of ixf replace_create into SYS_BRANCH_INFO                
+db2 import from SYS_MENU_INFO.ixf                 of ixf replace_create into SYS_MENU_INFO             
+db2 import from SYS_MENU_ROLE_REL.ixf                 of ixf replace_create into SYS_MENU_ROLE_REL             
+db2 import from SYS_OPERLOG_INFO.ixf                 of ixf replace_create into SYS_OPERLOG_INFO           
+db2 import from SYS_PUBCODE_INFO.ixf                 of ixf replace_create into SYS_PUBCODE_INFO            
+db2 import from SYS_ROLE_INFO.ixf                 of ixf replace_create into SYS_ROLE_INFO                
+db2 import from SYS_TRIGGER_INFO.ixf                 of ixf replace_create into SYS_TRIGGER_INFO         
+db2 import from SYS_USER_INFO.ixf                 of ixf replace_create into SYS_USER_INFO         
+db2 import from SYS_USER_ROLE.ixf                 of ixf replace_create into SYS_USER_ROLE     
+db2 import from SYS_USER_ROLE_REL.ixf                 of ixf replace_create into SYS_USER_ROLE_REL          

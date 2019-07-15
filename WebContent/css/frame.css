@@ -1,0 +1,431 @@
+
+.icon-acf-add{
+	background:url('../images/icons/add.png') no-repeat;
+}
+.icon-acf-edit{
+	background:url('../images/icons/edit.png') no-repeat;
+}
+.icon-acf-delete{
+	background:url('../images/icons/delete.png') no-repeat;
+}
+.icon-acf-resetPassword{
+	background:url('../images/icons/resetPassword.png') no-repeat;
+}
+.icon-acf-userrole{
+	background:url('../images/icons/userrole.png') no-repeat;
+}
+
+.icon-acf-useredit{
+	background:url('../images/icons/useredit.png') no-repeat;
+}
+.icon-acf-userImport{
+	background:url('../images/icons/userImport.png') no-repeat;
+}
+.icon-acf-sysroleManage{
+	background:url('../images/icons/sysrole.png') no-repeat;
+}
+.icon-acf-code{
+	background:url('../images/icons/code.png') no-repeat;
+}
+
+
+
+
+
+.icon-acf-userManage-menu{
+	background:url('../images/icons/userManage.png') no-repeat;
+}
+
+.icon-acf-sysrole-menu{
+	background:url('../images/icons/sysrole.png') no-repeat;
+}
+
+.icon-acf-branch-menu{
+	background:url('../images/icons/branchManage.png') no-repeat;
+}
+
+.icon-acf-sysmenu-menu{
+	background:url('../images/icons/sysmenuManage.png') no-repeat;
+}
+
+.icon-acf-approle-menu{
+	background:url('../images/icons/approleManage.png') no-repeat;
+}
+
+.icon-acf-approle-menu{
+	background:url('../images/icons/approleManage.png') no-repeat;
+}
+
+.icon-acf-help-menu{
+	background:url('../images/icons/helpManage.png') no-repeat;
+}
+
+.icon-acf-app-menu{
+	background:url('../images/icons/appManage.png') no-repeat;
+}
+
+.icon-acf-app-menu{
+	background:url('../images/icons/appManage.png') no-repeat;
+}
+
+.icon-acf-pubcode-menu{
+	background:url('../images/icons/pubcodeManage.png') no-repeat;
+}
+
+.icon-acf-sysEtlStatus-menu{
+	background:url('../images/icons/sysEtlStatus.png') no-repeat;
+}
+
+.icon-acf-rptsrv-menu{
+	background:url('../images/icons/rptsrv.png') no-repeat;
+}
+
+.icon-acf-operlog-menu{
+	background:url('../images/icons/operlog.png') no-repeat;
+}
+
+.icon-acf-annoType-menu{
+	background:url('../images/icons/annoType.png') no-repeat;
+}
+
+.icon-acf-anno-menu{
+	background:url('../images/icons/anno.png') no-repeat;
+}
+
+.icon-acf-syslog-menu{
+	background:url('../images/icons/syslog.png') no-repeat;
+}
+
+.icon-acf-sysSession-menu{
+	background:url('../images/icons/sysSession.png') no-repeat;
+}
+.icon-acf-sysdblink-menu{
+	background:url('../images/icons/sysdblink.png') no-repeat;
+}
+.icon-acf-mailsrv-menu{
+	background:url('../images/icons/dataShow.png') no-repeat;
+}
+.icon-acf-roleuser-menu{
+	background:url('../images/icons/roleuser.png') no-repeat;
+}
+
+.icon-acf-rolemenu-menu{
+	background:url('../images/icons/rolemenu.png') no-repeat;
+}
+
+.icon-acf-rolereport-menu{
+	background:url('../images/icons/rolereport.png') no-repeat;
+}
+
+.icon-acf-roleinput-menu{
+	background:url('../images/icons/roleinput.png') no-repeat;
+}
+
+.icon-acf-rolesvrpt-menu{
+	background:url('../images/icons/rolesvrpt.png') no-repeat;
+}
+
+.icon-acf-rolefastrpt-menu{
+	background:url('../images/icons/rolefastrpt.png') no-repeat;
+}
+
+
+.icon-acf-code-menu{
+	background:url('../images/icons/code.png') no-repeat;
+}
+
+.icon-acf-color-menu{
+	background:url('../images/icons/color.png') no-repeat;
+}
+
+.icon-acf-dashboard-menu{
+	background:url('../images/icons/dashboardManage.png') no-repeat;
+}
+
+.icon-acf-rptTab-menu{
+	background:url('../images/icons/rptTab.png') no-repeat;
+}
+
+.icon-acf-rptHome-menu{
+	background:url('../images/icons/rptHomeManage.png') no-repeat;
+}
+
+.icon-acf-para-menu{
+	background:url('../images/icons/paraManage.png') no-repeat;
+}
+
+.icon-acf-paratemp-menu{
+	background:url('../images/icons/paratempManage.png') no-repeat;
+}
+
+.icon-acf-port-menu{
+	background:url('../images/icons/port.png') no-repeat;
+}
+
+.icon-acf-portGroup-menu{
+	background:url('../images/icons/portGroup.png') no-repeat;
+}
+
+.icon-acf-portManage-menu{
+	background:url('../images/icons/portManage.png') no-repeat;
+}
+
+.icon-acf-morevisitrpt-menu{
+	background:url('../images/icons/morevisitrpt.png') no-repeat;
+}
+
+.icon-acf-rptNewIssue-menu{
+	background:url('../images/icons/rptNewIssue.png') no-repeat;
+}
+
+.icon-acf-rptNewVisit-menu{
+	background:url('../images/icons/rptNewVisit.png') no-repeat;
+}
+
+.icon-acf-rptNewUpdate-menu{
+	background:url('../images/icons/rptNewUpdate.png') no-repeat;
+}
+
+.icon-acf-reportIssue-menu{
+	background:url('../images/icons/reportIssue.png') no-repeat;
+}
+
+.icon-acf-reportManage-menu{
+	background:url('../images/icons/reportManage.png') no-repeat;
+}
+
+.icon-acf-reportSyn-menu{
+	background:url('../images/icons/reportSyn.png') no-repeat;
+}
+
+.icon-acf-reportRelate-menu{
+	background:url('../images/icons/reportRelate.png') no-repeat;
+}
+
+.icon-acf-rptPara-menu{
+	background:url('../images/icons/rptPara.png') no-repeat;
+}
+.icon-acf-rptTemplate-menu{
+	background:url('../images/icons/rptTemplate.png') no-repeat;
+}
+.icon-acf-rptSv-menu{
+	background:url('../images/icons/rptSv.png') no-repeat;
+}
+.icon-acf-rptSvConfig-menu{
+	background:url('../images/icons/rptSvConfig.png') no-repeat;
+}
+
+.icon-acf-input-menu{
+	background:url('../images/icons/input.png') no-repeat;
+}
+
+.icon-acf-inputManage-menu{
+	background:url('../images/icons/inputManage.png') no-repeat;
+}
+
+.icon-acf-dataset-menu{
+	background:url('../images/icons/datasetManage.png') no-repeat;
+}
+
+.icon-acf-regex-menu{
+	background:url('../images/icons/regex.png') no-repeat;
+}
+
+.icon-acf-inputAll-menu{
+	background:url('../images/icons/inputAll.png') no-repeat;
+}
+
+.icon-acf-reportRank-menu{
+	background:url('../images/icons/reportRank.png') no-repeat;
+}
+
+.icon-acf-prevent-menu{
+	background:url('../images/icons/reportRank.png') no-repeat;
+}
+.icon-acf-manager-menu{
+	background:url('../images/icons/manager.png') no-repeat;
+}
+.icon-acf-fastrptManager-menu{
+	background:url('../images/icons/fastrptManager.png') no-repeat;
+}
+
+.icon-acf-appmenu-menu{
+	background:url('../images/icons/appmenu.png') no-repeat;
+}
+.icon-acf-approle1-menu{
+	background:url('../images/icons/approle1.png') no-repeat;
+}
+.icon-acf-resource-menu{
+	background:url('../images/icons/resource.png') no-repeat;
+}
+
+.icon-acf-dataShow-menu{
+	background:url('../images/icons/dataShow.png') no-repeat;
+}
+
+.icon-acf-theme-menu{
+	background:url('../images/icons/themeManage.png') no-repeat;
+}
+
+.icon-acf-delivery-menu{
+	background:url('../images/icons/delivery.png') no-repeat;
+}
+
+
+.icon-acf-sysmanage-menu{
+	background:url('../images/icons/sysmanage.png') no-repeat;
+}
+
+.icon-acf-reportdir{
+	background:url('../images/icons/reportdir.png') no-repeat;
+}
+
+.icon-acf-rpt-congos{
+	background:url('../images/icons/cognos.gif') no-repeat;
+}
+
+
+.icon-acf-rpt-dzbb{
+	background:url('../images/icons/dzbb.gif') no-repeat;
+}
+
+.icon-acf-rpt-rqbb{
+	background:url('../images/icons/cognos.gif') no-repeat;
+}
+
+.icon-acf-rpt-url{
+	background:url('../images/icons/reportRelate.png') no-repeat;
+}
+
+.icon-acf-paradir{
+	background:url('../images/icons/paradir.png') no-repeat;
+}
+.icon-acf-para{
+	background:url('../images/icons/para.png') no-repeat;
+}
+
+.icon-acf-paratempdir{
+	background:url('../images/icons/paratempdir.png') no-repeat;
+}
+
+.icon-acf-paratemp{
+	background:url('../images/icons/paratemp.png') no-repeat;
+}
+
+.icon-acf-inputdir{
+	background:url('../images/icons/inputdir.png') no-repeat;
+}
+
+.icon-acf-input{
+	background:url('../images/icons/input.gif') no-repeat;
+}
+
+.icon-acf-datasetdir{
+	background:url('../images/icons/datasetdir.png') no-repeat;
+}
+
+.icon-acf-dataset{
+	background:url('../images/icons/dataset.png') no-repeat;
+}
+
+.icon-acf-dashboarddir{
+	background:url('../images/icons/dashboarddir.png') no-repeat;
+}
+
+.icon-acf-dashboard{
+	background:url('../images/icons/dashboard.png') no-repeat;
+}
+
+.icon-acf-fastrptdir{
+	background:url('../images/icons/fastrptdir.png') no-repeat;
+}
+
+.icon-acf-fastrpt{
+	background:url('../images/icons/table.png') no-repeat;
+}
+.icon-acf-fastlist{
+	background:url('../images/icons/list.gif') no-repeat;
+}
+
+.icon-acf-dataset{
+	background:url('../images/icons/dataset.png') no-repeat;
+}
+
+
+.icon-acf-themedir{
+	background:url('../images/icons/themedir.png') no-repeat;
+}
+
+.icon-acf-theme{
+	background:url('../images/icons/theme.png') no-repeat;
+}
+
+.icon-acf-tabdir{
+	background:url('../images/icons/tabdir.png') no-repeat;
+}
+
+
+.icon-acf-rpttab{
+	background:url('../images/icons/tab.png') no-repeat;
+}
+.icon-acf-svrpt-dir{
+	background:url('../images/icons/tab.png') no-repeat;
+}
+
+.icon-acf-svrpt{
+	background:url('../images/icons/excel.gif') no-repeat;
+}
+
+.icon-acf-branch{
+	background:url('../images/icons/branch.png') no-repeat;
+}
+
+.icon-acf-docRpt{
+	background:url('../images/icons/docRpt.png') no-repeat;
+}
+
+.icon-acf-tagTemp{
+	background:url('../images/icons/tagTemp.png') no-repeat;
+}
+
+.icon-acf-docTemp{
+	background:url('../images/icons/docTemp.png') no-repeat;
+}
+
+.icon-acf-docTag{
+	background:url('../images/icons/docTag.png') no-repeat;
+}
+
+.icon-acf-tag{
+	background:url('../images/icons/tag.png') no-repeat;
+}
+
+.icon-acf-doc-rpt-dir{
+	background:url('../images/icons/docDir.png') no-repeat;
+}
+
+.icon-acf-doc-rpt{
+	background:url('../images/icons/appDocRpt.png') no-repeat;
+}
+
+.icon-menu-left{
+	background:url('../images/icons/menuLeft.jpg') no-repeat;
+}
+
+.icon-acf-level-menu{
+	background:url('../images/icons/level.png') no-repeat;
+}
+
+.icon-acf-searchConfig-menu{
+	background:url('../images/icons/searchConfig.png') no-repeat;
+}
+.icon-acf-searchGroup-menu{
+	background:url('../images/icons/searchGroup.png') no-repeat;
+}
+.icon-acf-userLevel-menu{
+	background:url('../images/icons/userLevel.png') no-repeat;
+}
+.icon-acf-userCategory-menu{
+	background:url('../images/icons/userCategory.png') no-repeat;
+}
+

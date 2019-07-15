@@ -1,0 +1,50 @@
+			table.title {
+				border-color: black;
+				border-collapse: collapse;
+				cursor: move;
+			}
+			table.title th {
+				font-size: 14px;
+				font-family: Verdana;
+				white-space: nowrap;
+				background:#0791d8;
+				font-weight: bold;
+				color:#ffffff;
+				line-height: 25px;
+			}
+			table.erd {
+				font-size: 12px;
+				font-family: Verdana;
+				border-color: black;
+				border-collapse: collapse;
+				overflow: auto;
+				cursor: move;
+				white-space: nowrap;
+				background: #eee;
+				height: 30px;
+			}
+			table.erd td {
+				border:1px solid #aaa;
+			}
+			table td{
+				line-height:25px;
+				padding:0;
+				margin:0;
+			}
+			table tr td table tr td{
+				border:1px solid #fff;
+				padding:0;
+				margin:0;
+			}
+			table th{
+				border:1px solid #0791d8;
+				line-height:25px;
+				padding:0;
+				margin:0;
+			}
+			div{
+				background:none;
+			}
+			table.erd tr,table.erd td{height:25px;}
+			.keyimg{width:30px;text-align: center;}
+			.keyname{text-indent: 1em;}

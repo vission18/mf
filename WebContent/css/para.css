@@ -1,0 +1,13 @@
+.cellNum1 li{float:left;width:100%}
+.cellNum2 li{float:left;width:50%}
+.cellNum3 li{float:left;width:33%}
+.cellNum4 li{float:left;width:25%}
+.cellNum5 li{float:left;width:20%}
+.inputCell{display:inline;}
+
+
+.imf_para_temp{color:#555;padding:10px 0;border-bottom:1px solid #ddd;padding:0 10px;}
+.imf_para_temp li{padding:4px 0;border-bottom:2px solid #eee;height:30px}
+.imf_para_temp strong{margin:0 5px 0 0;vertical-align:top;white-space:nowrap;width:100px;display:inline-block;text-align:right;font-weight:normal;line-height:28px;background-color:#eee;}
+.imf_para_temp label{margin:0 10px 0 6px;white-space:nowrap;vertical-align:middle;}
+.imf_para_temp input.disabled{background:#eee;}

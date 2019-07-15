@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
+       ">
+
+	<context:annotation-config />
+
+	<!-- 使用annotation注入 -->
+	<context:component-scan base-package="com.vission.mf">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+	<bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basename" value="messages/messages-info" />
+		<property name="useCodeAsDefaultMessage" value="true" />
+	</bean>
+	
+	<!-- 引入属性文件 -->
+	<context:property-placeholder location="classpath:config.properties" />
+
+	<bean id="dataSource" class="org.logicalcobwebs.proxool.ProxoolDataSource">
+		<property name="driver" value="${dataSource.driverClassName}" />
+		<property name="driverUrl" value="${dataSource.url}" />
+		<property name="user" value="${dataSource.username}" />
+		<property name="password" value="${dataSource.password}" />
+		<property name="prototypeCount" value="5" />
+		<property name="maximumConnectionCount" value="20" />
+		<property name="minimumConnectionCount" value="10" />
+		<property name="houseKeepingTestSql" value="${dataSource.houseKeepingTestSql}" />
+		<property name="trace" value="false" />
+	</bean>
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+				<prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+				<prop key="hibernate.format_sql">${hibernate.format_sql}</prop>
+				<prop key="hibernate.jdbc.batch_size">${hibernate.jdbc.batch_size}</prop>
+				<prop key="hibernate.jdbc.fetch_size">${hibernate.jdbc.fetch_size}</prop>
+				<prop key="hibernate.generate_statistics">${hibernate.generate_statistics}</prop>
+				<prop key="hibernate.proxool.pool_alias">${dataSource.alias}</prop>
+				<prop key="hibernate.connection.provider_class">${hibernate.connection.provider_class}</prop>
+				<prop key="javax.persistence.validation.mode">none</prop>
+			</props>
+		</property>
+		<property name="packagesToScan">
+			<list>
+				<value>com.vission.mf</value>
+			</list>
+		</property>
+		<property name="namingStrategy">
+			<bean class="org.hibernate.cfg.ImprovedNamingStrategy" />
+		</property>
+	</bean>
+	
+	<bean id="namedParameterJdbcTemplate"
+		class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
+		<constructor-arg>
+			<ref bean="dataSource" />
+		</constructor-arg>
+	</bean>
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<constructor-arg>
+			<ref bean="dataSource" />
+		</constructor-arg>
+	</bean>
+
+	<bean id="simpleJdbcTemplate" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
+		<constructor-arg>
+			<ref bean="dataSource" />
+		</constructor-arg>
+	</bean>
+	
+	<!-- 事务配置 -->
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<!-- 使用annotation定义事务 -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<!-- 开启aop自动代理，支持注解 -->
+	<aop:aspectj-autoproxy proxy-target-class="true"></aop:aspectj-autoproxy>
+	<!-- 异常拦截 -->
+	<bean id="exceptionThrowsAspect" class="com.vission.mf.base.exception.ExceptionThrowsAspect" />
+	<aop:config>
+		<aop:aspect id="controller" ref="exceptionThrowsAspect">
+			<aop:pointcut id="allController"
+				expression="execution(* com.vission.mf.*.controller..*.*(..))" />
+			 <aop:around pointcut-ref="allController" method="doAround"/>
+		</aop:aspect>
+	</aop:config>
+
+	<bean id="proxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="proxyTargetClass">
+			<value>true</value>
+		</property>
+		<property name="target">
+			<bean class="com.vission.mf.base.exception.ExceptionThrowsAspect"/>
+		</property>
+	</bean>
+	
+</beans>

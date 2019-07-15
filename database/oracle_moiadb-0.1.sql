@@ -1,0 +1,237 @@
+
+CREATE TABLE SYS_BRANCH_INFO
+(
+	BRANCH_NO             VARCHAR(32)  NOT NULL,
+	BRANCH_NAME           VARCHAR(64)  NOT NULL,
+	BRANCH_SHORTNAME      VARCHAR(64)  ,
+	UP_BRANCH_NO          VARCHAR(32)  NOT NULL,
+	leaf_flag             VARCHAR(1)  
+)
+;
+
+
+
+ALTER TABLE SYS_BRANCH_INFO
+	ADD CONSTRAINT  XPK_BRANCH  PRIMARY KEY (BRANCH_NO)
+;
+
+
+
+CREATE TABLE SYS_MENU_INFO
+(
+	MENU_ID               VARCHAR(32)  NOT NULL,
+	MENU_NAME             VARCHAR(64)  NOT NULL,
+	MENU_URL              VARCHAR(32)  ,
+	NEW_OPEN              CHAR  ,
+	MENU_LEVER            INTEGER  ,
+	MENU_ORDER            INTEGER  ,
+	PARENT_ID             VARCHAR(32)  ,
+	MENU_TYPE             CHAR  
+)
+;
+
+
+
+ALTER TABLE SYS_MENU_INFO
+	ADD CONSTRAINT  XPK_SYSMENU  PRIMARY KEY (MENU_ID)
+;
+
+
+
+CREATE TABLE SYS_MENU_ROLE_REL
+(
+	ROLE_ID               VARCHAR(32)  NOT NULL,
+	MENU_ID               VARCHAR(32)  NOT NULL
+)
+;
+
+
+
+ALTER TABLE SYS_MENU_ROLE_REL
+	ADD CONSTRAINT  XPK_MENU_ROLE  PRIMARY KEY (MENU_ID,ROLE_ID)
+;
+
+
+
+CREATE TABLE SYS_OPERLOG_INFO
+(
+	LOG_ID                VARCHAR(32)  NOT NULL,
+	LOGIN_NAME            VARCHAR(64)  NOT NULL,
+	LOGIN_IP              VARCHAR(32)  ,
+	OPER_TIME             DATE  ,
+	OPER_CONTENT          VARCHAR(1024)  ,
+	OPER_TYPE             VARCHAR(64)  
+)
+;
+
+
+
+ALTER TABLE SYS_OPERLOG_INFO
+	ADD CONSTRAINT  XPK_OPERLOG  PRIMARY KEY (LOG_ID)
+;
+
+
+
+CREATE TABLE SYS_PUBCODE_INFO
+(
+	CODE_ID               VARCHAR(32)  NOT NULL,
+	CODE_VALUE            VARCHAR(64)  NOT NULL,
+	CODE_RMK              VARCHAR(512)  
+)
+;
+
+
+
+ALTER TABLE SYS_PUBCODE_INFO
+	ADD CONSTRAINT  XPK_PUBCODE  PRIMARY KEY (CODE_ID)
+;
+
+
+
+CREATE TABLE SYS_ROLE_INFO
+(
+	ROLE_ID               VARCHAR(32)  NOT NULL,
+	ROLE_NAME             VARCHAR(64)  NOT NULL,
+	ROLE_RMK              VARCHAR(512)  
+)
+;
+
+
+
+ALTER TABLE SYS_ROLE_INFO
+	ADD CONSTRAINT  XPK_SYSROLE  PRIMARY KEY (ROLE_ID)
+;
+
+
+
+CREATE TABLE SYS_USER_INFO
+(
+	USER_ID               VARCHAR(32)  NOT NULL,
+	LOGIN_NAME            VARCHAR(64)  NOT NULL,
+	LOGIN_PWD             VARCHAR(64)  NOT NULL,
+	USER_STATUS           CHAR  NOT NULL,
+	USER_NAME             VARCHAR(64)  NOT NULL,
+	USER_EMAIL            VARCHAR(64)  ,
+	USER_TEL              VARCHAR(32)  ,
+	USER_MOB_TEL          VARCHAR(32)  ,
+	BRANCH_NO             VARCHAR(32)  
+)
+;
+
+
+
+ALTER TABLE SYS_USER_INFO
+	ADD CONSTRAINT  XPK_SYSUSER  PRIMARY KEY (USER_ID)
+;
+
+
+
+CREATE UNIQUE INDEX XAK1_SYSUSER ON SYS_USER_INFO
+(
+	LOGIN_NAME            ASC
+)
+;
+
+
+
+CREATE TABLE SYS_USER_ROLE_REL
+(
+	ROLE_ID               VARCHAR(32)  NOT NULL,
+	USER_ID               VARCHAR(32)  NOT NULL
+)
+;
+
+create table SYS_ADVICE_INFO(
+    ADVICE_ID   varchar2(32) not null,
+    PAGE_ID varchar2(200),
+    USER_ID varchar2(32),
+    ADVICE  varchar2(2000),
+    primary key (ADVICE_ID)
+)
+;
+
+
+ALTER TABLE SYS_USER_ROLE_REL
+	ADD CONSTRAINT  XPK_USER_ROLE  PRIMARY KEY (ROLE_ID,USER_ID)
+;
+
+
+
+ALTER TABLE SYS_MENU_ROLE_REL
+	ADD CONSTRAINT R_4 FOREIGN KEY (ROLE_ID) REFERENCES SYS_ROLE_INFO(ROLE_ID)
+;
+
+
+ALTER TABLE SYS_MENU_ROLE_REL
+	ADD CONSTRAINT R_5 FOREIGN KEY (MENU_ID) REFERENCES SYS_MENU_INFO(MENU_ID)
+;
+
+
+
+ALTER TABLE SYS_USER_INFO
+	ADD CONSTRAINT R_18 FOREIGN KEY (BRANCH_NO) REFERENCES SYS_BRANCH_INFO(BRANCH_NO)
+;
+
+
+
+ALTER TABLE SYS_USER_ROLE_REL
+	ADD CONSTRAINT R_3 FOREIGN KEY (ROLE_ID) REFERENCES SYS_ROLE_INFO(ROLE_ID)
+
+;
+
+
+ALTER TABLE SYS_USER_ROLE_REL
+	ADD CONSTRAINT R_16 FOREIGN KEY (USER_ID) REFERENCES SYS_USER_INFO(USER_ID)
+;
+
+insert into SYS_BRANCH_INFO (BRANCH_NO, BRANCH_NAME, BRANCH_SHORTNAME, UP_BRANCH_NO, LEAF_FLAG)
+values ('0000', 'XX银行', 'XX银行', '-1', '0');
+insert into SYS_BRANCH_INFO (BRANCH_NO, BRANCH_NAME, BRANCH_SHORTNAME, UP_BRANCH_NO, LEAF_FLAG)
+values ('0001', 'XX银行一级支行1', 'XX银行一级支行1', '0000', '0');
+insert into SYS_BRANCH_INFO (BRANCH_NO, BRANCH_NAME, BRANCH_SHORTNAME, UP_BRANCH_NO, LEAF_FLAG)
+values ('0002', 'XX银行二级支行1', 'XX银行二级支行1', '0001', '1');
+insert into SYS_BRANCH_INFO (BRANCH_NO, BRANCH_NAME, BRANCH_SHORTNAME, UP_BRANCH_NO, LEAF_FLAG)
+values ('0003', 'XX银行二级支行2', 'XX银行二级支行2', '0001', '1');
+insert into SYS_BRANCH_INFO (BRANCH_NO, BRANCH_NAME, BRANCH_SHORTNAME, UP_BRANCH_NO, LEAF_FLAG)
+values ('0004', 'XX银行一级支行2', 'XX银行一级支行2', '0000', '0');
+insert into SYS_BRANCH_INFO (BRANCH_NO, BRANCH_NAME, BRANCH_SHORTNAME, UP_BRANCH_NO, LEAF_FLAG)
+values ('0005', 'XX银行二级支行3', 'XX银行二级支行3', '0004', '1');
+insert into SYS_BRANCH_INFO (BRANCH_NO, BRANCH_NAME, BRANCH_SHORTNAME, UP_BRANCH_NO, LEAF_FLAG)
+values ('0006', 'XX银行二级支行4', 'XX银行二级支行4', '0005', '1');
+
+
+insert into SYS_MENU_INFO (MENU_ID, MENU_NAME, MENU_URL, NEW_OPEN, MENU_LEVER, MENU_ORDER, PARENT_ID, MENU_TYPE)
+values ('top1', '系统管理', null, ' ', 0, 0, '-1', ' ');
+insert into SYS_MENU_INFO (MENU_ID, MENU_NAME, MENU_URL, NEW_OPEN, MENU_LEVER, MENU_ORDER, PARENT_ID, MENU_TYPE)
+values ('top2', '参数设置', null, ' ', 0, 1, '-1', ' ');
+insert into SYS_MENU_INFO (MENU_ID, MENU_NAME, MENU_URL, NEW_OPEN, MENU_LEVER, MENU_ORDER, PARENT_ID, MENU_TYPE)
+values ('top1-sec1', '用户管理', '/user/list.do', ' ', 0, 0, 'top1', ' ');
+insert into SYS_MENU_INFO (MENU_ID, MENU_NAME, MENU_URL, NEW_OPEN, MENU_LEVER, MENU_ORDER, PARENT_ID, MENU_TYPE)
+values ('top1-sec2', '角色管理', '/role/list.do', ' ', 0, 1, 'top1', ' ');
+insert into SYS_MENU_INFO (MENU_ID, MENU_NAME, MENU_URL, NEW_OPEN, MENU_LEVER, MENU_ORDER, PARENT_ID, MENU_TYPE)
+values ('top1-sec3', '机构管理', '/branch/list.do', null, 0, 2, 'top1', null);
+insert into SYS_MENU_INFO (MENU_ID, MENU_NAME, MENU_URL, NEW_OPEN, MENU_LEVER, MENU_ORDER, PARENT_ID, MENU_TYPE)
+values ('top1-sec4', '操作日志管理', '/operLog/list.do', null, 0, 3, 'top1', null);
+
+insert into SYS_ROLE_INFO (ROLE_ID, ROLE_NAME, ROLE_RMK)
+values ('role1', 'role1', null);
+insert into SYS_ROLE_INFO (ROLE_ID, ROLE_NAME, ROLE_RMK)
+values ('role_admin', '管理员角色', null);
+
+insert into SYS_MENU_ROLE_REL (ROLE_ID, MENU_ID)
+values ('role_admin', 'top1');
+insert into SYS_MENU_ROLE_REL (ROLE_ID, MENU_ID)
+values ('role_admin', 'top1-sec1');
+insert into SYS_MENU_ROLE_REL (ROLE_ID, MENU_ID)
+values ('role_admin', 'top1-sec2');
+insert into SYS_MENU_ROLE_REL (ROLE_ID, MENU_ID)
+values ('role_admin', 'top1-sec3');
+insert into SYS_MENU_ROLE_REL (ROLE_ID, MENU_ID)
+values ('role_admin', 'top1-sec4');
+insert into SYS_MENU_ROLE_REL (ROLE_ID, MENU_ID)
+values ('role_admin', 'top2');
+insert into SYS_USER_INFO (USER_ID, LOGIN_NAME, LOGIN_PWD, USER_STATUS, USER_NAME, USER_EMAIL, USER_TEL, USER_MOB_TEL, BRANCH_NO)
+values ('admin', 'admin', '21232f297a57a5a743894a0e4a801fc3', '1', '系统管理员', 'admin@adtec.com.cn', null, null, '0000');
+
+insert into SYS_USER_ROLE_REL (ROLE_ID, USER_ID)
+values ('role_admin', 'admin');
