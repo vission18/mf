@@ -86,7 +86,7 @@
 				</li>
 				<li>
 					<strong>文件说明:</strong>
-					<span> <textarea id="fileRemark" name="fileRemark" rows="8" cols="70" class="imf_textarea"></textarea> </span>
+					<span> <textarea id="fileRemark" name="fileRemark" rows="8" cols="70" style="width:515px;" class="imf_textarea"></textarea> </span>
 				</li>
 			</ul>
 			</div>
@@ -121,18 +121,15 @@
 	</div>
 	
 	<div id="open-adminInfo-win" class="imf_pop" style="width:450px;">
-		<div class="imf_pop_title"><strong>联系管理员</strong><span class="imf_pop_closed" onClick="popClosed('open-adminInfo-win')">关闭</span></div>
+		<div class="imf_pop_title"><strong>联系作者</strong><span class="imf_pop_closed" onClick="popClosed('open-adminInfo-win')">关闭</span></div>
 		<form id="open-adminInfo-form" class="ui-form" method="post" enctype="multipart/form-data">
 			<div class="imf_pop_con">
 			<ul>
-				<li><span style="color:red">
-					1:通过管理员微信后，请说明要下载的资源名称.</br>
-					2:由于访问人数较多，服务器压力过大，大文件建议使用网盘下载.</br>
-					3:资源系统中若有侵权行为，请立即联系管理员删除资源.</br>
+				<li><span id="contackAuthor" style="color:red">
 				</span></li>
 				<li>
-					<div align="center">
-						<img src="${pageContext.request.contextPath}/images/adminWeChat.jpg" title="微信" width="195" height="275"/>
+					<div  align="center">
+						<img id="authorVxImg" src="${pageContext.request.contextPath}/images/adminWeChat.jpg" title="微信" width="180" height="180"/>
 					</div>
 				</li>
 			</ul>

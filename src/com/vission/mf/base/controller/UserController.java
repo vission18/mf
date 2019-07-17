@@ -1,12 +1,14 @@
 package com.vission.mf.base.controller;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +17,7 @@ import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,12 +26,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.vission.mf.base.enums.BaseConstants;
+import com.vission.mf.base.enums.db.SYS_USER_INFO;
 import com.vission.mf.base.exception.ServiceException;
 import com.vission.mf.base.model.bo.AjaxResult;
 import com.vission.mf.base.model.bo.BranchTree;
 import com.vission.mf.base.model.bo.DataGrid;
 import com.vission.mf.base.model.bo.SessionInfo;
 import com.vission.mf.base.model.bo.Tree;
+import com.vission.mf.base.model.bo.UploadJson;
 import com.vission.mf.base.model.po.SysBranchInfo;
 import com.vission.mf.base.model.po.SysRoleInfo;
 import com.vission.mf.base.model.po.SysUserInfo;
@@ -36,6 +41,8 @@ import com.vission.mf.base.model.po.UploadExcel;
 import com.vission.mf.base.service.SysBranchInfoService;
 import com.vission.mf.base.service.SysRoleInfoService;
 import com.vission.mf.base.service.SysUserInfoService;
+import com.vission.mf.base.sourcems.zysfilemang.po.ZysFileMang;
+import com.vission.mf.base.util.ClassUtil;
 import com.vission.mf.base.util.ConnectToOthers;
 import com.vission.mf.base.util.DateUtil;
 import com.vission.mf.base.util.Encrypt;
@@ -102,11 +109,52 @@ public class UserController extends BaseController {
 			throws ServiceException {
 		AjaxResult ajaxResult = new AjaxResult();
 		try {
+
+			if (user.getFile() == null
+					|| user.getFile().getOriginalFilename() == null
+					|| "".equals(user.getFile().getOriginalFilename())) {
+				throw new ServiceException("不存在的文件");
+			}
+			if (user.getFile().getSize() > 10240000) {
+				throw new ServiceException("文件过大！");
+			}
+			if (!RegexUtil.matching("(\\.png|\\.PNG|\\.jpg|\\.JPG)$", user
+					.getFile().getOriginalFilename())) {
+				ajaxResult.setSuccess(false);
+				ajaxResult.setMessage("请上传jpg或png格式的图片");
+				return ajaxResult;
+			}
 			if (user.getUserId() == null || "".equals(user.getUserId())) {
 				ajaxResult.setType(BaseConstants.OPER_TYPE_INSERT);
 			} else {
 				ajaxResult.setType(BaseConstants.OPER_TYPE_UPDATE);
 			}
+			//读取配置文件
+			ResourceBundle rb = null;
+			// 读取acf_config.properties配置文件
+			rb = ResourceBundle.getBundle("acf_config");
+			if (null == rb) {
+				logger.info("acf_config.properties文件不存在，请检查文件路径！");
+				ajaxResult.setSuccess(false);
+				ajaxResult.setMessage("acf_config.properties文件不存在，请检查文件路径！");
+				return ajaxResult;
+			}
+			String sysName = ClassUtil.chcString(rb.getString("SYS_NAME"));
+			sysName = "".equals(sysName)?"/mf":sysName;
+			String vxFilePath = ClassUtil.chcString(rb.getString("VX_FILE_LOCAL_PATH"));
+			if("".equals(vxFilePath)){
+				vxFilePath = "E:/git/localRes/mf/WebContent/images/vximg/";
+			}
+			if(!vxFilePath.endsWith("/")){
+				vxFilePath = vxFilePath+"/";
+			}
+			String tempFileName = user.getFile().getOriginalFilename();
+			String localFileName = tempFileName.substring(
+					tempFileName.lastIndexOf("/") + 1, tempFileName.length());
+			String filePath =  vxFilePath+ user.getLoginName();
+			user.setVxImgName(localFileName);
+			user.setVxImgPath(sysName+"/images/vximg/" + user.getLoginName() + "/" + localFileName);
+
 			sysUserInfoService.save(user);
 			// 保存后,判断是否是session用户,如果是则更新session
 			SessionInfo sessionInfo = (SessionInfo) session
@@ -120,7 +168,18 @@ public class UserController extends BaseController {
 				sessionUser.setUserStatus(user.isUserStatus());
 				sessionUser.setBranchNo(user.getBranchNo());
 			}
-			ajaxResult.setData(user);
+			//上传文件
+			File path = new File(filePath); // 判断文件路径下的文件夹是否存在，不存在则创建
+			if (!path.exists()) {
+				path.mkdirs();
+			}
+			File savedFile = new File(filePath + "/" + localFileName);
+			boolean isCreateSuccess = savedFile.createNewFile();// 是否创建文件成功
+			if (isCreateSuccess) { // 将文件写入
+				user.getFile().transferTo(savedFile);
+			}
+			
+			ajaxResult.setData(null);
 			ajaxResult.setSuccess(true);
 			ajaxResult.setMessage("用户保存成功！");
 		} catch (Exception e) {
@@ -129,7 +188,63 @@ public class UserController extends BaseController {
 		response.setContentType("text/html;charset=utf-8");
 		return ajaxResult;
 	}
-	
+
+	/**
+	 * 通过文件管理来保存用户
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @param user
+	 * @return
+	 * @throws ServiceException
+	 */
+	@RequestMapping(value = "/saveByFile", method = RequestMethod.POST)
+	@ResponseBody
+	public AjaxResult saveByFile(HttpServletRequest request,
+			HttpServletResponse response, HttpSession session, SysUserInfo user)
+			throws ServiceException {
+		AjaxResult ajaxResult = new AjaxResult();
+		try {
+
+			if (user.getFile() == null
+					|| user.getFile().getOriginalFilename() == null
+					|| "".equals(user.getFile().getOriginalFilename())) {
+				throw new ServiceException("不存在的文件");
+			}
+			if (user.getFile().getSize() > 10240000) {
+				throw new ServiceException("文件过大！");
+			}
+			if (!RegexUtil.matching("(\\.png|\\.PNG|\\.jpg|\\.JPG)$", user
+					.getFile().getOriginalFilename())) {
+				ajaxResult.setSuccess(false);
+				ajaxResult.setMessage("请上传jpg或png格式的图片");
+				return ajaxResult;
+			}
+			
+			SessionInfo sessionInfo = (SessionInfo) session
+					.getAttribute(BaseConstants.USER_SESSION_KEY);
+			SysUserInfo sessionUser = sessionInfo.getUser();
+			
+			if (user.getUserId() == null || "".equals(user.getUserId())) {
+				ajaxResult.setType(BaseConstants.OPER_TYPE_INSERT);
+				user.setCreateTime(DateUtil.getCurrentSystemTime());
+				user.setCreateUser(sessionUser.getUserId());
+			} else {
+				user.setLastModTime(DateUtil.getCurrentSystemTime());
+				user.setLastModUser(sessionUser.getUserId());
+				ajaxResult.setType(BaseConstants.OPER_TYPE_UPDATE);
+			}
+			this.sysUserInfoService.saveByFileMang(user);
+			
+			ajaxResult.setData(null);
+			ajaxResult.setSuccess(true);
+			ajaxResult.setMessage("用户注册成功！");
+		} catch (Exception e) {
+			throw new ServiceException(e);
+		}
+		response.setContentType("text/html;charset=utf-8");
+		return ajaxResult;
+	}
 	/**
 	 * 修改我的信息
 	 */
@@ -140,20 +255,77 @@ public class UserController extends BaseController {
 			throws ServiceException {
 		AjaxResult ajaxResult = new AjaxResult();
 		try {
-			SessionInfo sessionInfo = (SessionInfo) session.getAttribute(BaseConstants.USER_SESSION_KEY);
+			SessionInfo sessionInfo = (SessionInfo) session
+					.getAttribute(BaseConstants.USER_SESSION_KEY);
 			SysUserInfo sessionUser = sessionInfo.getUser();
-			if (user.getUserId() == null || "".equals(user.getUserId()) || !sessionUser.getUserId().equals(user.getUserId())) {
+			if (user.getFile().getSize() > 10240000) {
+				throw new ServiceException("文件过大！");
+			}
+			if (!RegexUtil.matching("(\\.png|\\.PNG|\\.jpg|\\.JPG)$", user
+					.getFile().getOriginalFilename())) {
+				ajaxResult.setSuccess(false);
+				ajaxResult.setMessage("请上传jpg或png格式的图片");
+				return ajaxResult;
+			}
+			
+			
+			if (user.getUserId() == null || "".equals(user.getUserId())
+					|| !sessionUser.getUserId().equals(user.getUserId())) {
 				throw new ServiceException("修改失败");
 			} else {
+				//读取配置文件
+				ResourceBundle rb = null;
+				// 读取acf_config.properties配置文件
+				rb = ResourceBundle.getBundle("acf_config");
+				if (null == rb) {
+					logger.info("acf_config.properties文件不存在，请检查文件路径！");
+					ajaxResult.setSuccess(false);
+					ajaxResult.setMessage("acf_config.properties文件不存在，请检查文件路径！");
+					return ajaxResult;
+				}
+				String sysName = ClassUtil.chcString(rb.getString("SYS_NAME"));
+				sysName = "".equals(sysName)?"/mf":sysName;
+				String vxFilePath = ClassUtil.chcString(rb.getString("VX_FILE_LOCAL_PATH"));
+				if("".equals(vxFilePath)){
+					vxFilePath = "E:/git/localRes/mf/WebContent/images/vximg/";
+				}
+				if(!vxFilePath.endsWith("/")){
+					vxFilePath = vxFilePath+"/";
+				}
+				String tempFileName = user.getFile().getOriginalFilename();
+				String localFileName = tempFileName.substring(
+						tempFileName.lastIndexOf("/") + 1, tempFileName.length());
+				String filePath =  vxFilePath+ user.getLoginName();
+				sessionUser.setVxImgName(localFileName);
+				sessionUser.setVxImgPath(sysName+"/images/vximg/" + user.getLoginName() + "/" + localFileName);
+				
 				sessionUser.setUserName(user.getUserName());
 				sessionUser.setUserEmail(user.getUserEmail());
 				sessionUser.setUserMobTel(user.getUserMobTel());
 				sessionUser.setUserTel(user.getUserTel());
+				sessionUser.setLastModUser(user.getUserId());
+				sessionUser.setLastModTime(DateUtil.getCurrentSystemTime());
 				sysUserInfoService.save(sessionUser);
+				
+				try {
+					//上传文件
+					File path = new File(filePath); // 判断文件路径下的文件夹是否存在，不存在则创建
+					if (!path.exists()) {
+						path.mkdirs();
+					}
+					File savedFile = new File(filePath + "/" + localFileName);
+					boolean isCreateSuccess = savedFile.createNewFile();// 是否创建文件成功
+					if (isCreateSuccess) { // 将文件写入
+						user.getFile().transferTo(savedFile);
+					}
+				} catch (Exception e) {
+					logger.info("上传文件失败！");
+					logger.error("上传文件失败:"+e.getMessage(),e);
+				}
 				ajaxResult.setData(sessionUser);
 				ajaxResult.setSuccess(true);
 				ajaxResult.setMessage("保存成功！");
-			}			
+			}
 		} catch (Exception e) {
 			throw new ServiceException(e);
 		}
@@ -197,11 +369,13 @@ public class UserController extends BaseController {
 			throws ServiceException {
 		AjaxResult ajaxResult = new AjaxResult();
 		try {
-			SessionInfo sessionInfo = (SessionInfo) request.getSession().getAttribute(BaseConstants.USER_SESSION_KEY);
+			SessionInfo sessionInfo = (SessionInfo) request.getSession()
+					.getAttribute(BaseConstants.USER_SESSION_KEY);
 			ajaxResult.setData(user);
-			if(sessionInfo.getUser().getLoginName().equals(user.getLoginName())){
+			if (sessionInfo.getUser().getLoginName()
+					.equals(user.getLoginName())) {
 				throw new ServiceException("当前用户不能删除！");
-			}else{
+			} else {
 				sysUserInfoService.delete(user);
 				ajaxResult.setSuccess(true);
 				ajaxResult.setMessage("用户删除成功！");
@@ -217,10 +391,16 @@ public class UserController extends BaseController {
 	 */
 	@RequestMapping(value = "/getById")
 	@ResponseBody
-	public AjaxResult getById(SysUserInfo user) {
+	public AjaxResult getById(HttpServletRequest request,
+			HttpServletResponse response) {
 		AjaxResult ajaxResult = new AjaxResult();
-		ajaxResult.setData(sysUserInfoService.getUserById(user.getUserId()));
 		ajaxResult.setSuccess(true);
+		try {
+			ajaxResult.setData(sysUserInfoService.getUserById(request.getParameter("USER_ID")));
+		} catch (ServiceException e) {
+			ajaxResult.setData(null);
+			ajaxResult.setSuccess(false);
+		}
 		return ajaxResult;
 	}
 
@@ -329,8 +509,8 @@ public class UserController extends BaseController {
 			ajaxResult.setData(data);
 		} else {
 			SysBranchInfo sbi = sysBranchInfoService.getById(branchNo);
-			if(sbi != null){
-				if(sbi.getBranchName() != null){
+			if (sbi != null) {
+				if (sbi.getBranchName() != null) {
 					data = sbi.getBranchName();
 				}
 			}
@@ -350,8 +530,7 @@ public class UserController extends BaseController {
 		response.setContentType("application/vnd.ms-excel");
 		try {
 			String fileName = "用户批量导入模板-"
-					+ DateUtil.format(new Date(), "yyyyMMddHHmmss")
-					+ ".xls";
+					+ DateUtil.format(new Date(), "yyyyMMddHHmmss") + ".xls";
 			fileName = new String(fileName.getBytes("GBK"), "ISO8859-1");
 			response.setHeader("Content-Disposition", "attachment;fileName="
 					+ fileName);
@@ -440,6 +619,7 @@ public class UserController extends BaseController {
 		}
 		return dataGrid;
 	}
+
 	public String callbackAapl(HttpServletRequest request) throws Exception {
 		String res = "";
 		try {
@@ -460,11 +640,63 @@ public class UserController extends BaseController {
 		}
 		return "ok";
 	}
-	
-	@RequestMapping(value = "/58test")
+
+	/**
+	 * 审批用户
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "/appUserSta")
 	@ResponseBody
-	public String getYonghongRptList(){
-		String tokenStr = ConnectToOthers.sendGet("http://openapi.58.com/v2/auth/show?app_key=9563c05f18c2bdd49aa454455e36bc16&redirect_uri=/user/callbackAapl.do", "");
-		return "";
+	public AjaxResult appUserSta(HttpServletRequest request,
+			HttpServletResponse response) {
+		AjaxResult ajaxResult = new AjaxResult();
+		ajaxResult.setSuccess(true);
+		ajaxResult.setMessage("审批成功！");
+		try {
+			String userId = request.getParameter("USER_ID");
+			SysUserInfo userInfo = sysUserInfoService.getUserById(userId);
+			if(userInfo != null){
+				userInfo.setLastModTime(DateUtil.getCurrentSystemTime());
+				userInfo.setUserStatus(true);
+				//更新用户状态
+				this.sysUserInfoService.save(userInfo);
+				//设置用户角色权限
+				this.sysUserInfoService.resetInitRole(userInfo);
+				//新增访问角色
+				this.sysUserInfoService.addUserView(userInfo);
+			}
+		} catch (Exception e) {
+			logger.error("审批失败："+e.getMessage(),e);
+			ajaxResult.setSuccess(false);
+			ajaxResult.setMessage("审批失败！");
+		}
+		return ajaxResult;
+	}
+	/**
+	 * 重置角色权限
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "/resetInitRole")
+	@ResponseBody
+	public AjaxResult resetInitRole(HttpServletRequest request,
+			HttpServletResponse response) {
+		AjaxResult ajaxResult = new AjaxResult();
+		ajaxResult.setSuccess(true);
+		try {
+			String userId = request.getParameter("USER_ID");
+			SysUserInfo userInfo = sysUserInfoService.getUserById(userId);
+			if(userInfo != null){
+				//设置用户角色权限
+				this.sysUserInfoService.resetInitRole(userInfo);
+			}
+		} catch (Exception e) {
+			logger.error("审批失败："+e.getMessage(),e);
+			ajaxResult.setSuccess(false);
+		}
+		return ajaxResult;
 	}
 }

@@ -2,6 +2,7 @@ package com.vission.mf.base.controller;
 
 import java.io.File;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -53,7 +54,13 @@ public class HelpFileController extends BaseController {
 				String name =new String(fileName.getBytes("ISO-8859-1"),"UTF-8");
 				file = new File(path+"/"+name);
 				if(file.exists()){
-					FileUtil.download(name, path+"/"+name, request, response);
+					String docName = new String(name.getBytes("GBK"), "ISO8859-1");
+					response.setHeader("Content-Disposition", "attachment;fileName="
+							+ docName);
+					ServletOutputStream out = response.getOutputStream();
+					out.write(FileUtil.file2OutStream(path+"/"+name).toByteArray());
+					out.flush();
+					out.close();
 				}
 			}					
 		} catch (Exception e) {

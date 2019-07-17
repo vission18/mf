@@ -1,5 +1,6 @@
 package com.vission.mf.base.sourcems.zysfilemang.po;
 
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,7 +10,6 @@ import javax.persistence.Transient;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.vission.mf.base.sourcems.zysfilemang.db.ZYS_FILE_MANG;
 
@@ -310,6 +310,38 @@ public class ZysFileMang {
 
 	public void setDownloadCountOndate(int downloadCountOndate) {
 		this.downloadCountOndate = downloadCountOndate;
+	}
+
+	private String vxImgPath;
+
+	@Transient
+	public String getVxImgPath() {
+		return vxImgPath;
+	}
+
+	public void setVxImgPath(String vxImgPath) {
+		this.vxImgPath = vxImgPath;
+	}
+
+	private String userMobTel;
+	private String userEmail;
+
+	@Transient
+	public String getUserMobTel() {
+		return userMobTel;
+	}
+
+	public void setUserMobTel(String userMobTel) {
+		this.userMobTel = userMobTel;
+	}
+
+	@Transient
+	public String getUserEmail() {
+		return userEmail;
+	}
+
+	public void setUserEmail(String userEmail) {
+		this.userEmail = userEmail;
 	}
 
 }

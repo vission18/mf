@@ -10,17 +10,27 @@
 <div class="easyui-layout" fit="true" id="user-mainBody">
 	<!-- Search panel start -->
 	<div data-options="region:'north',title:'',border:false"
-		style="overflow:hidden;padding:10px;" align="center" split="true">
+		style="overflow:hidden;padding:10px;" align="left" split="true">
 		<form id="userSearchForm">
 			<div class="searchmore">
 				<label>登录名称:</label>
 				<input type="text" name="loginName" value="" class="imf_intxt" style="width:80px;"/>
 				<label>用户姓名:</label>
 				<input type="text" name="userName" value="" class="imf_intxt" style="width:120px;"/>
-				<label>邮件地址:</label>
-				<input type="text" name="userEmail" value="" class="imf_intxt" style="width:120px;"/>
+				<label>用户类型:</label>
+				<select id="userType_query" class="imf_intxt easyui-combobox" name="userType" style="width:120px;">  
+					    <option value="">请选择</option>  
+					    <option value="1">系统管理员</option>  
+					    <option value="2">普通用户</option>  
+					    <option value="3">访问用户</option> 
+				</select>  
+				<label>用户状态:</label>
+				<select id="userStatus_query" class="imf_intxt easyui-combobox" name="userStatus" editable="false" style="width:120px;">  
+				    <option value="1">启用</option>  
+				    <option value="0" selected="selected">停用</option>  
+				</select>  
 				<span class="imf_more"><input id="userBtnSearch" type="button" value="搜索" class="imf_searchmore"/></span>						
-				<span class="imf_all"><input id="userBtnClean" type="button" value="显示全部" class="imf_showall"/></span>
+				<!-- <span class="imf_all"><input id="userBtnClean" type="button" value="显示全部" class="imf_showall"/></span> -->
 			</div>
 		</form>
 	</div>
@@ -34,9 +44,9 @@
 	<div id="user-role-div"></div>
 	
 	<!-- Edit Win&Form -->
-	<div id="user-edit-win" class="imf_pop" style="width:440px;">
+	<div id="user-edit-win" class="imf_pop" style="width:700px;">
 		<div class="imf_pop_title"><strong>用户维护</strong><span class="imf_pop_closed" onClick="popClosed('user-edit-win')">关闭</span></div>
-		<form id="userEditForm" class="ui-form" method="post">
+		<form id="userEditForm" class="ui-form" method="post" enctype="multipart/form-data">
 			<input type="hidden" name="userId">
 			<input type="hidden" name="loginPassword">
 			<div class="imf_pop_con">
@@ -45,25 +55,22 @@
 					<strong>登录名：</strong>
 					<span><input class="imf_intxt easyui-validatebox"  data-options="required:true,missingMessage:'请输入登录名称.'" type="text" id="login_name"
 						name="loginName"></span>
-				</li>
-				<li>
 					<strong>用户名：</strong>
 					<span><input class="imf_intxt easyui-validatebox"  data-options="required:true,missingMessage:'请输入用户名称.'" type="text" id="user_name" name="userName" data-options="required:true"></span>
 				</li>
 				<li>
-					<strong>用户状态：</strong>
-					<span>
-						<input name="userStatus" type="radio" value="1" checked="checked"/><label>启用</label>
-						<input name="userStatus" type="radio" value="0" /><label>停用</label>
-					</span>
-				</li>
-					<li>
 					<strong>用户类型：</strong>
 					<span>
 						<select id="userType" class="imf_intxt easyui-combobox" name="userType" style="width:200px;">  
 						    <option value="1">系统管理员</option>  
 						    <option value="2">普通用户</option>  
+						    <option value="3">访问用户</option> 
 						</select>  
+					</span>
+					<strong>用户状态：</strong>
+					<span>
+						<input name="userStatus" type="radio" value="1" checked="checked"/><label>启用</label>
+						<input name="userStatus" type="radio" value="0" /><label>停用</label>
 					</span>
 				</li>
 <!-- 				<li>
@@ -71,23 +78,23 @@
 					<select id="userBranchTree" name="branchNo" style="width:250px;" class="imf_intxt easyui-combotree" ></select>
 				</li> -->
 				<li>
-					<strong>邮箱地址：</strong>
-					<span>
-					<input class="imf_intxt easyui-validatebox"  type="text" name="userEmail" id="user_email"
-						data-options="required:false,validType:'email',missingMessage:'邮箱不能为空.',invalidMessage:'邮箱格式不正确'">
-					</span>
-				</li>
-				<li>
-					<strong>固定电话：</strong>
+					<strong>联系方式：</strong>
 					<span>
 					<input id="user-tel" class="imf_intxt easyui-numberbox" type="text" name="userTel">
 					</span>
-				</li>
-				<li>
 					<strong>移动电话：</strong>
 					<span>
 					<input class="imf_intxt easyui-numberbox" type="text" name="userMobTel" id="user-mobile">
 				</span>
+				</li>
+				<li>
+					<strong>邮箱地址：</strong>
+					<span>
+					<input class="imf_intxt easyui-validatebox"  type="text" name="userEmail" id="user_email" >
+					</span>
+					
+					<strong>二维码：</strong>
+					<span><input id="imgFile" name="file" type="file" class="imf_intxt"/></span>
 				</li>
 			</ul>
 			</div>

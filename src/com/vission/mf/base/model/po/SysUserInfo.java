@@ -9,18 +9,20 @@ import javax.persistence.Transient;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.vission.mf.base.BaseEntity;
 import com.vission.mf.base.enums.db.SYS_USER_INFO;
 
 /**
-* 功能/模块 ：系统用户实体类
-*/
+ * 功能/模块 ：系统用户实体类
+ */
 @Entity
 @Table(name = SYS_USER_INFO.TABLE_NAME)
-@JsonIgnoreProperties(value={"hibernateLazyInitializer","handler","fieldHandler"}) 
+@JsonIgnoreProperties(value = { "hibernateLazyInitializer", "handler",
+		"fieldHandler" })
 public class SysUserInfo extends BaseEntity {
-	
+
 	private static final long serialVersionUID = 1L;
 	/* 数据库字段 */
 	private String userId;
@@ -35,12 +37,12 @@ public class SysUserInfo extends BaseEntity {
 	private String userMobTel;
 	private String userType;
 	private String loginIp;
-	
+
 	/* 临时使用 */
-	private String newPassword;//新密码
-	private String confirmPassword;//确认新密码
-	private String cryptPassword;//内部加密密码
-	private boolean projectManager;//项目管理员
+	private String newPassword;// 新密码
+	private String confirmPassword;// 确认新密码
+	private String cryptPassword;// 内部加密密码
+	private boolean projectManager;// 项目管理员
 
 	@Id
 	@GeneratedValue(generator = "uuid-gen")
@@ -49,6 +51,7 @@ public class SysUserInfo extends BaseEntity {
 	public String getUserId() {
 		return userId;
 	}
+
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
@@ -57,6 +60,7 @@ public class SysUserInfo extends BaseEntity {
 	public String getLoginName() {
 		return loginName;
 	}
+
 	public void setLoginName(String loginName) {
 		this.loginName = loginName;
 	}
@@ -65,6 +69,7 @@ public class SysUserInfo extends BaseEntity {
 	public String getLoginPassword() {
 		return loginPassword;
 	}
+
 	public void setLoginPassword(String loginPassword) {
 		this.loginPassword = loginPassword;
 	}
@@ -73,6 +78,7 @@ public class SysUserInfo extends BaseEntity {
 	public String getUserName() {
 		return userName;
 	}
+
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
@@ -81,6 +87,7 @@ public class SysUserInfo extends BaseEntity {
 	public String getUserEmail() {
 		return userEmail;
 	}
+
 	public void setUserEmail(String userEmail) {
 		this.userEmail = userEmail;
 	}
@@ -89,6 +96,7 @@ public class SysUserInfo extends BaseEntity {
 	public boolean isUserStatus() {
 		return userStatus;
 	}
+
 	public void setUserStatus(boolean userStatus) {
 		this.userStatus = userStatus;
 	}
@@ -97,6 +105,7 @@ public class SysUserInfo extends BaseEntity {
 	public String getBranchNo() {
 		return branchNo;
 	}
+
 	public void setBranchNo(String branchNo) {
 		this.branchNo = branchNo;
 	}
@@ -105,6 +114,7 @@ public class SysUserInfo extends BaseEntity {
 	public String getUserTel() {
 		return userTel;
 	}
+
 	public void setUserTel(String userTel) {
 		this.userTel = userTel;
 	}
@@ -113,6 +123,7 @@ public class SysUserInfo extends BaseEntity {
 	public String getUserMobTel() {
 		return userMobTel;
 	}
+
 	public void setUserMobTel(String userMobTel) {
 		this.userMobTel = userMobTel;
 	}
@@ -121,8 +132,10 @@ public class SysUserInfo extends BaseEntity {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((getUserId() == null) ? 0 : getUserId().hashCode());
-		result = prime * result + ((loginName == null) ? 0 : loginName.hashCode());
+		result = prime * result
+				+ ((getUserId() == null) ? 0 : getUserId().hashCode());
+		result = prime * result
+				+ ((loginName == null) ? 0 : loginName.hashCode());
 		return result;
 	}
 
@@ -152,6 +165,7 @@ public class SysUserInfo extends BaseEntity {
 	public String getNewPassword() {
 		return newPassword;
 	}
+
 	public void setNewPassword(String newPassword) {
 		this.newPassword = newPassword;
 	}
@@ -160,48 +174,137 @@ public class SysUserInfo extends BaseEntity {
 	public String getConfirmPassword() {
 		return confirmPassword;
 	}
+
 	public void setConfirmPassword(String confirmPassword) {
 		this.confirmPassword = confirmPassword;
 	}
+
 	@Transient
 	public boolean isProjectManager() {
 		return projectManager;
 	}
+
 	public void setProjectManager(boolean projectManager) {
 		this.projectManager = projectManager;
 	}
+
 	@Transient
 	public String getBranchName() {
 		return branchName;
 	}
+
 	public void setBranchName(String branchName) {
 		this.branchName = branchName;
 	}
-	
+
 	@Column(name = SYS_USER_INFO.USER_TYPE)
 	public String getUserType() {
 		return userType;
 	}
-	
+
 	@Transient
 	public String getCryptPassword() {
 		return cryptPassword;
 	}
-	
+
 	public void setUserType(String userType) {
 		this.userType = userType;
 	}
-	
+
 	public void setCryptPassword(String cryptPassword) {
 		this.cryptPassword = cryptPassword;
 	}
-	
+
 	@Transient
 	public String getLoginIp() {
 		return loginIp;
 	}
+
 	public void setLoginIp(String loginIp) {
 		this.loginIp = loginIp;
 	}
-	
+
+	private String parentUserId;
+	private String vxImgPath;
+	private String vxImgName;
+
+	@Column(name = SYS_USER_INFO.VX_IMG_PATH)
+	public String getVxImgPath() {
+		return vxImgPath;
+	}
+
+	public void setVxImgPath(String vxImgPath) {
+		this.vxImgPath = vxImgPath;
+	}
+
+	@Column(name = SYS_USER_INFO.VX_IMG_NAME)
+	public String getVxImgName() {
+		return vxImgName;
+	}
+
+	public void setVxImgName(String vxImgName) {
+		this.vxImgName = vxImgName;
+	}
+
+	public MultipartFile file;
+
+	@Transient
+	public MultipartFile getFile() {
+		return file;
+	}
+
+	public void setFile(MultipartFile file) {
+		this.file = file;
+	}
+
+	private String createUser;
+	private String createTime;
+	private String lastModUser;
+	private String lastModTime;
+
+	@Column(name = SYS_USER_INFO.CREATE_USER)
+	public String getCreateUser() {
+		return createUser;
+	}
+
+	public void setCreateUser(String createUser) {
+		this.createUser = createUser;
+	}
+
+	@Column(name = SYS_USER_INFO.CREATE_TIME)
+	public String getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(String createTime) {
+		this.createTime = createTime;
+	}
+
+	@Column(name = SYS_USER_INFO.LAST_MOD_USER)
+	public String getLastModUser() {
+		return lastModUser;
+	}
+
+	public void setLastModUser(String lastModUser) {
+		this.lastModUser = lastModUser;
+	}
+
+	@Column(name = SYS_USER_INFO.LAST_MOD_TIME)
+	public String getLastModTime() {
+		return lastModTime;
+	}
+
+	public void setLastModTime(String lastModTime) {
+		this.lastModTime = lastModTime;
+	}
+
+	@Column(name = SYS_USER_INFO.PRARENT_USER_ID)
+	public String getParentUserId() {
+		return parentUserId;
+	}
+
+	public void setParentUserId(String parentUserId) {
+		this.parentUserId = parentUserId;
+	}
+
 }

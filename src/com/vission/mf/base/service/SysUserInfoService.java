@@ -1,11 +1,14 @@
 package com.vission.mf.base.service;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -25,6 +28,8 @@ import com.vission.mf.base.hibernate.CriteriaSetup;
 import com.vission.mf.base.model.bo.DataGrid;
 import com.vission.mf.base.model.po.SysBranchInfo;
 import com.vission.mf.base.model.po.SysUserInfo;
+import com.vission.mf.base.util.ClassUtil;
+import com.vission.mf.base.util.DateUtil;
 import com.vission.mf.base.util.Encrypt;
 
 /**
@@ -42,6 +47,9 @@ public class SysUserInfoService extends BaseService {
 
 	@Autowired
 	private SysBranchInfoDao sysBranchInfoDao;
+	
+	@Autowired
+	private SysRoleInfoService sysRoleInfoService;
 
 	/**
 	 * 根据登录名获取用户(用于登录判断)
@@ -63,7 +71,7 @@ public class SysUserInfoService extends BaseService {
 		setupFilterMap(user, filterMap); // 将查询条件对象拆分成 将对象型查询条件拆分成集合型查询条件
 
 		Map<String, String> orderMap = new HashMap<String, String>(1);
-		orderMap.put("loginName", CriteriaSetup.ASC);
+		orderMap.put("createTime", CriteriaSetup.DESC);
 		return sysUserInfoDao.findByCriteria(dataGrid, pageSize, filterMap,
 				orderMap);// 空对象 页尺寸 map类型的查询条件 查询条件
 	}
@@ -96,7 +104,8 @@ public class SysUserInfoService extends BaseService {
 			}*/
 			isNew = true;
 			user.setUserId(null);
-			user.setLoginPassword(Encrypt.e(user.getLoginName()));
+			//user.setLoginPassword(Encrypt.e(user.getLoginName()));
+			user.setLoginPassword(Encrypt.e("123456"));//默认密码为123456
 		} /*else {
 			if (sysUserInfoDao.isExistUserName(user.getUserName(),
 					user.getUserId())) {
@@ -104,6 +113,78 @@ public class SysUserInfoService extends BaseService {
 			}
 		}*/
 		sysUserInfoDao.save(user);
+		if (isNew) {
+			this.saveOperLogInfo(SYS_OPERLOG_INFO.INSERT_SYS_USER,
+					user.getUserName());
+		} else {
+			this.saveOperLogInfo(SYS_OPERLOG_INFO.UPDATE_SYS_USER,
+					user.getUserName());
+		}
+	}
+	
+	/**
+	 * 通过文件管理或首页注册及修改
+	 * @param user
+	 * @throws ServiceException
+	 */
+	public void saveByFileMang(SysUserInfo user) throws ServiceException {
+		boolean isNew = false;
+		if (user.getUserId() == null || "".equals(user.getUserId())) {
+			if (sysUserInfoDao.isExistLoginName(user.getLoginName())) {
+				throw new ServiceException("登录名已被使用，请重新输入!");
+			}
+			/*if (sysUserInfoDao.isExistUserName(user.getLoginName())) {
+				throw new ServiceException("错误：用户名与现有用户重复,请确认");
+			}*/
+			isNew = true;
+			user.setUserId(null);
+			user.setUserStatus(false);//停用
+			//user.setLoginPassword(Encrypt.e(user.getLoginName()));
+			user.setLoginPassword(Encrypt.e("123456"));//初始密码
+		}
+		//读取配置文件
+		ResourceBundle rb = null;
+		// 读取acf_config.properties配置文件
+		rb = ResourceBundle.getBundle("acf_config");
+		if (null == rb) {
+			logger.info("acf_config.properties文件不存在，请检查文件路径！");
+			return;
+		}
+		String sysName = ClassUtil.chcString(rb.getString("SYS_NAME"));
+		sysName = "".equals(sysName)?"/mf":sysName;
+		String vxFilePath = ClassUtil.chcString(rb.getString("VX_FILE_LOCAL_PATH"));
+		if("".equals(vxFilePath)){
+			vxFilePath = "E:/git/localRes/mf/WebContent/images/vximg/";
+		}
+		if(!vxFilePath.endsWith("/")){
+			vxFilePath = vxFilePath+"/";
+		}
+		String tempFileName = user.getFile().getOriginalFilename();
+		String localFileName = tempFileName.substring(
+				tempFileName.lastIndexOf("/") + 1, tempFileName.length());
+		String filePath =  vxFilePath+ user.getLoginName();
+		user.setVxImgName(localFileName);
+		user.setVxImgPath(sysName+"/images/vximg/" + user.getLoginName() + "/" + localFileName);
+		
+		user.setUserType(SYS_USER_INFO.USER_TYPE_USER);
+		sysUserInfoDao.save(user);
+		
+		try {
+			//上传文件
+			File path = new File(filePath); // 判断文件路径下的文件夹是否存在，不存在则创建
+			if (!path.exists()) {
+				path.mkdirs();
+			}
+			File savedFile = new File(filePath + "/" + localFileName);
+			boolean isCreateSuccess = savedFile.createNewFile();// 是否创建文件成功
+			if (isCreateSuccess) { // 将文件写入
+				user.getFile().transferTo(savedFile);
+			}
+		} catch (Exception e) {
+			logger.info("上传文件失败！");
+			logger.error("上传文件失败:"+e.getMessage(),e);
+		}
+		
 		if (isNew) {
 			this.saveOperLogInfo(SYS_OPERLOG_INFO.INSERT_SYS_USER,
 					user.getUserName());
@@ -134,14 +215,26 @@ public class SysUserInfoService extends BaseService {
 			filterMap.put(CriteriaSetup.LIKE_ALL + "userEmail",
 					user.getUserEmail());
 		}
+		
+		if (user.getUserType() != null
+				&& !user.getUserType().trim().equals("")
+				&& !user.getUserType().trim().equals("null")) {
+			filterMap.put(CriteriaSetup.EQ + "userType",
+					user.getUserType());
+		}
+		if (user.isUserStatus()) {
+			filterMap.put(CriteriaSetup.EQ + "userStatus",true);
+		}else{
+			filterMap.put(CriteriaSetup.EQ + "userStatus",false);
+		}
 	}
 
 	/**
 	 * 获取用户
 	 */
 	@Transactional(readOnly = true)
-	public SysUserInfo getUserById(String userId) {
-		return sysUserInfoDao.get(userId);
+	public SysUserInfo getUserById(String userId) throws ServiceException{
+		return sysUserInfoDao.getUserInfoByUserId(userId);
 	}
 
 	/**
@@ -312,5 +405,46 @@ public class SysUserInfoService extends BaseService {
 	 */
 	public List<SysUserInfo> suggest(String word) {
 		return sysUserInfoDao.suggest(word);
+	}
+	
+	/**
+	 * 新增访问用户
+	 * @param user
+	 * @throws ServiceException
+	 */
+	public void addUserView(SysUserInfo user)throws ServiceException{
+		//新增访问用户
+		SysUserInfo userView = new SysUserInfo();
+		userView.setUserId(null);
+		userView.setUserName(ClassUtil.chcString(user.getUserName())+"【访问者】");
+		userView.setLoginName(ClassUtil.chcString(user.getLoginName())+"_v");
+		userView.setLoginPassword(Encrypt.e("123456"));
+		userView.setUserStatus(true);
+		userView.setCreateTime(DateUtil.getCurrentSystemTime());
+		userView.setParentUserId(user.getUserId());
+		userView.setUserType(SYS_USER_INFO.USER_TYPE_VIEW);
+		this.save(userView);
+		this.resetInitRole(userView);
+	}
+	
+	/**
+	 * 角色权限初始化
+	 * @param user
+	 * @throws ServiceException
+	 */
+	public void resetInitRole(SysUserInfo user)throws ServiceException{
+		if(user ==null || null == user.getUserId() || "".equals(user.getUserId())){
+			logger.error("重置失败，未获取到userId");
+			return;
+		}
+		List<String> listIds = new ArrayList<String>();
+		if(SYS_USER_INFO.USER_TYPE_VIEW.equals(user.getUserType())){
+			//重置访问用户角色权限
+			listIds.add("402880ed6bc5d6c5016bc615e69b000e");
+		}else{
+			//重置资源用户角色权限
+			listIds.add("948387ca6bfa1d9c016bfa2a3bd50002");
+		}
+		sysRoleInfoService.bacthInsertUserRole(user.getUserId(), listIds);
 	}
 }

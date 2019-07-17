@@ -72,8 +72,8 @@ public class LoginController extends BaseController {
 					this.saveOperLogInfo(request, SYS_OPERLOG_INFO.LOGIN_SYS_SYSTEM, "用户登录成功");
 					return "redirect:/home.do";
 				}else{
-					debug("用户被禁用");
-					message = "用户被禁用";
+					debug("用户未注册");
+					message = "用户未注册";
 				}
 			} else {
 				debug("密码错误");

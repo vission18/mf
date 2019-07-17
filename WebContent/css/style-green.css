@@ -173,7 +173,7 @@ a.imf_next{background-position:-157px -208px;}
 .imf_dap_con p{font-size:12px;text-align:center;color:#FF8A00;background:url(../images/icons/warn.jpg) no-repeat 30px center;padding:0 50px;}
 .imf_dap_btn{text-align:center;padding-bottom:10px;}
 
-.imf_roll{_width:300px;position:fixed;_position:absolute;bottom:-200px;right:5px;border:3px solid #0b8580;background-color:#fff;border-radius:8px;box-shadow:1px 2px 3px #333;display:none;z-index:8000}
+.imf_roll{_width:500px;position:fixed;_position:absolute;bottom:-200px;right:5px;border:3px solid #0b8580;background-color:#fff;border-radius:8px;box-shadow:1px 2px 3px #333;display:none;z-index:8000}
 .imf_roll_con{text-align:center;padding:30px 0px;}
 .imf_dap_con p,.imf_roll_con p{line-height:30px;color:#555;text-align:center;}
 

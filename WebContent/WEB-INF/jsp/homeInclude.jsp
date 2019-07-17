@@ -20,7 +20,25 @@
 	}
 	
 	function modifyUser() {
-		if ($('#modifyUserForm').form('validate')) {
+		$('#modifyUserForm').form('submit', {
+			url : "${pageContext.request.contextPath}/user/saveMyInfo.do",
+			success : function(result) {
+				try {
+					var r = $.parseJSON(result);
+					if (r.success) {
+						popInfo("userInfo", r.message);
+					}else{
+						popInfo("userError", r.message);
+					}
+					
+				} catch (e) {
+					popInfo("userError", result);
+				}
+			}
+		});
+		
+		
+/* 		if ($('#modifyUserForm').form('validate')) {
 			$.post("${pageContext.request.contextPath}/user/saveMyInfo.do", {
 				userId : $('#userId').val(),
 				loginName : $('#loginName').val(),
@@ -36,7 +54,7 @@
 					popInfo("userError", data.message);
 				}
 			}, "json");
-		}
+		} */
 	}
 	$(function() {
 		//修改密码绑定事件
@@ -45,9 +63,6 @@
 		});
 		//修改用户绑定事件
 		$('#open_change_user').click(function() {
-			$('#loginName').attr({
-				disabled : true
-			});//设置disabled,不允许修改
 			popWindow('modify-user-win', 'mainBody');
 		});
 		//帮助绑定事件
@@ -176,7 +191,7 @@
 		<div class="imf_pop_title">
 			<strong>修改我的信息</strong><span class="imf_pop_closed" onclick="popClosed('modify-user-win')">关闭</span>
 		</div>
-		<form id="modifyUserForm" class="ui-form" method="post"
+		<form id="modifyUserForm" class="ui-form" method="post" enctype="multipart/form-data"
 			action="${pageContext.request.contextPath}/user/saveMyInfo.do">
 			<!-- action="user/saveMyInfo.do" -->
 			<div class="imf_pop_con">
@@ -184,9 +199,9 @@
 					value="${sessionInfo.user.userId}" id="userId" />
 				<ul>
 					<li><strong> 登录名： </strong> <span> <input
-							class="imf_intxt easyui-validatebox" type="text" id="loginName"
-							name="loginName" value="${sessionInfo.user.loginName}"
-							id="loginName" /> </span>
+							class="imf_intxt easyui-validatebox" type="text" id="loginName" 
+							readonly="readonly" 
+							name="loginName" value="${sessionInfo.user.loginName}" /> </span>
 					</li>
 					<li><strong> 用户名：</strong> <span> <input
 							class="imf_intxt easyui-validatebox" type="text" id="userName"
@@ -208,6 +223,10 @@
 							class="imf_intxt easyui-validatebox" type="text" id="userMobTel"
 							name="userMobTel" value="${sessionInfo.user.userMobTel}"
 							data-options="required:false" /> </span>
+					</li>
+					<li>	
+						<strong>二维码：</strong>
+						<span><input id="home_imgFile" name="file" type="file" class="imf_intxt"/></span>
 					</li>
 				</ul>
 			</div>

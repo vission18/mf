@@ -1,22 +1,28 @@
 package com.vission.mf.base.sourcems.zysfilemang.service;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
+
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.vission.mf.base.enums.BaseConstants;
+import com.vission.mf.base.enums.db.SYS_USER_INFO;
 import com.vission.mf.base.exception.ServiceException;
 import com.vission.mf.base.hibernate.CriteriaSetup;
 import com.vission.mf.base.model.bo.DataGrid;
+import com.vission.mf.base.model.bo.SessionInfo;
 import com.vission.mf.base.model.bo.Tree;
+import com.vission.mf.base.model.po.SysUserInfo;
 import com.vission.mf.base.service.BaseService;
 import com.vission.mf.base.sourcems.zysfilemang.dao.ZysFileMangDao;
 import com.vission.mf.base.sourcems.zysfilemang.po.ZysFileMang;
+import com.vission.mf.base.util.ClassUtil;
 import com.vission.mf.base.util.DateUtil;
 
 /**
@@ -33,17 +39,30 @@ public class ZysFileMangService extends BaseService {
 	 * 分页数据列表
 	 */
 	@Transactional(readOnly = true)
-	public DataGrid dataGrid(ZysFileMang po, int pageNo, int pageSize) {
+	public DataGrid dataGrid( HttpSession session,ZysFileMang po, int pageNo, int pageSize) {
 		DataGrid dataGrid = new DataGrid();
 		dataGrid.setStartRow((pageNo - 1) * pageSize);
-		Map<String, Object> filterMap = new HashMap<String, Object>();
-		setupFilterMap(po, filterMap); // 将查询条件对象拆分成 将对象型查询条件拆分成集合型查询条件
-
-		Map<String, String> orderMap = new HashMap<String, String>(1);
-		// orderMap.put("loginName", CriteriaSetup.ASC);
-		dataGrid = zysFileMangDao.findByCriteria(dataGrid, pageSize, filterMap,
-				orderMap);
-		return dataGrid;// 空对象 页尺寸 map类型的查询条件 查询条件
+		
+		//文件创建者权限过滤，admin和超级访问者不需要过滤
+		SessionInfo sessionInfo = (SessionInfo) session
+				.getAttribute(BaseConstants.USER_SESSION_KEY);
+		SysUserInfo userInfo = sessionInfo.getUser();
+		//访问者用户取父级ID
+		String userId = SYS_USER_INFO.USER_TYPE_VIEW.equals(userInfo.getUserType())?userInfo.getParentUserId():userInfo.getUserId();
+		po.setCreateUser(userId);
+		
+		//读取配置文件
+		ResourceBundle rb = null;
+		// 读取acf_config.properties配置文件
+		rb = ResourceBundle.getBundle("acf_config");
+		
+		if (rb != null) {
+			String userIds = ClassUtil.chcString(rb.getString("FILE_USER_ID_NOCHECK"));
+			if(!"".equals(userIds) && userIds.contains(po.getCreateUser())){
+				po.setCreateUser(null);
+			}
+		}
+		return zysFileMangDao.findDataGrid(dataGrid, pageSize, po);
 	}
 
 	/**
@@ -105,7 +124,7 @@ public class ZysFileMangService extends BaseService {
 
 	@Transactional(readOnly = true)
 	public ZysFileMang getZysFileMangById(String pkId) {
-		return zysFileMangDao.get(pkId);
+		return zysFileMangDao.getFileInfoByPkId(pkId);
 	}
 
 	/**
@@ -151,7 +170,8 @@ public class ZysFileMangService extends BaseService {
 	public void initFilePara(ZysFileMang filePo) throws ServiceException {
 		//File file = new File(filePo.getFilePath());
 		filePo.setCreateTime(DateUtil.getCurrentSystemTime());
-		filePo.setDownloadCount((int) (195+(Math.random())*126));
+		//filePo.setDownloadCount((int) (195+(Math.random())*126));
+		filePo.setDownloadCount(0);
 	/*	filePo.setFileNm(file.getName());
 		filePo.setFileSize(file.length());*/
 		//初始年月

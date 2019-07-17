@@ -60,9 +60,11 @@ public class SecurityInterceptor implements HandlerInterceptor {
 				if (urls !=null && urls.contains(url)) {
 					return true;
 				} else {
-					request.setAttribute("msg", "您没有访问此资源的权限！<br/>请联系超管赋予您<br/>[" + url + "]<br/>的资源访问权限！");
+					//先取消权限验证
+					return true;
+					/*request.setAttribute("msg", "您没有访问此资源的权限！<br/>请联系超管赋予您<br/>[" + url + "]<br/>的资源访问权限！");
 					request.getRequestDispatcher("/error/noSecurity.jsp").forward(request, response);
-					return false;
+					return false;*/
 				}
 			}
 		}

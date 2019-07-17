@@ -117,8 +117,12 @@
 					<a href="javascript:void(0);" class="dimid" id="fullScreen" onclick="fullScreen();">点击切换全屏</a>
 				</div>
 				<div class="imf_userbtn">
-					<a href="javascript:void(0);" title="个人资料" id="open_change_user" class="imf_personal">个人资料</a>
-					<a href="javascript:void(0);" id="open_change_password" title="修改密码" class="imf_modifypass">修改密码</a>
+					<c:if test="${sessionInfo.user != null}">
+						<c:if test="${sessionInfo.user.userType != 3}">
+							<a href="javascript:void(0);" title="个人资料" id="open_change_user" class="imf_personal">个人资料</a>
+							<a href="javascript:void(0);" id="open_change_password" title="修改密码" class="imf_modifypass">修改密码</a>
+						</c:if>
+					</c:if>
 					 <a href="javascript:void(0);" id="open_help_download" title="帮助" class="imf_help">帮助</a>
 					<a href="${pageContext.request.contextPath}/login.do" title="安全退出" class="imf_safequit">安全退出</a>
 				</div>
@@ -127,9 +131,7 @@
 			<div class="imf_userinfo">
 				<c:if test="${sessionInfo.user != null}">
 					<strong>欢迎您：</strong>
-					<span>${sessionInfo.user.userName}</span>
-					<%-- <strong>机构：</strong>
-					<span>${sessionInfo.user.branchName}</span> --%>
+					<span style="color:black" >${sessionInfo.user.userName}</span>
 					<strong>当前时间：</strong>
 					<span id="clock"></span>
 				</c:if>

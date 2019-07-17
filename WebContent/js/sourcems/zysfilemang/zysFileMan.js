@@ -2,7 +2,7 @@
 function zysFileManDataGrid(baseUrl, buttons, type){
 	var zysFileMan_url = baseUrl + '/zysFileMan/zysFileManDataGrid.do';
 	var initZysFileMangToolbar = [ {
-		text : '新增',
+		text : '上传',
 		buttonType:'add',
 		iconCls : 'icon-add',
 		handler : function() {
@@ -86,7 +86,7 @@ function zysFileManDataGrid(baseUrl, buttons, type){
 		, {
 			field : 'countZanOndate',
 			title : '当月好评',
-			width : 80,
+			width : 80
 		}
 		, {
 			field : 'downloadCount',
@@ -110,9 +110,8 @@ function zysFileManDataGrid(baseUrl, buttons, type){
 					href = baseUrl + '/zysFileMan/downloadFileByPkId.do?PK_ID='+row.pkId;
 					str = str+ '<a href="'+ href +'">下载</a>';
 				}*/
-				str = str+ '<a href="#" onclick="openSkyWin('+index+')" style="color:blue" >查看详细</a>';
-				str = str+ '&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" onclick="openSkyWin('+index+')" style="color:blue" >网盘下载</a>';
-				str = str+ '&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" onclick="openAdminWin()" style="color:green" >联系作者</a>';
+				str = str+ '<a href="#" onclick="openSkyWin('+index+')" style="color:blue" >网盘下载</a>';
+				str = str+ '&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" onclick="openContackAuthorWin('+index+')" style="color:green" >联系作者</a>';
 				str = str +'</span>';
 				return str;
 			}	
@@ -202,12 +201,18 @@ function openSkyWin(rowIndex){
 	$('#openSkyDriveExtCode').val(fileRow.skyDriveExtCode);
 	popWindow('skyDrive-download-win', 'zysFileMan-mainBody');
 	
+	var colJson = {
+			'DOWNLOAD_COUNT':1,
+			'DOWNLOAD_COUNT_ONDATE':1,
+			'COUNT_CLICK':1,
+			'COUNT_CLICK_ONDATE':1
+			};
 	//更新下载次数
-	$.ajax(baseUrl + '/zysFileMan/updateDownloadCount.do?PK_ID='+fileRow.pkId, {
+	$.ajax(baseUrl + '/zysFileMan/updateFileCount.do?PK_ID='+fileRow.pkId, {
 		type:'post',
 		 	dataType:'json',
+		 	data:colJson,
 		 	success:function(result){
-		 		//$('#zysFileMan-data-list').datagrid('reload');
 		 	}
 	});	
 	
@@ -231,8 +236,15 @@ function zysFileManDeleteById(row){
 		 	}
 	});
 }
-
-function openAdminWin(){
+/**
+ * 联系作者
+ */
+function openContackAuthorWin(rowIndex){
+	var fileRows = $('#zysFileMan-data-list').datagrid('getRows');
+	var fileRow = fileRows[rowIndex];
+	$('#contackAuthor').html('手机：'+fileRow.userMobTel+' </br>邮箱：'+fileRow.userEmail);
+	console.info(fileRow.vxImgPath);
+	$('#authorVxImg').attr('src',fileRow.vxImgPath);
 	popWindow('open-adminInfo-win', 'zysFileMan-mainBody');
 }
 

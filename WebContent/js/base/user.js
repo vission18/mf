@@ -36,7 +36,7 @@ function userDataGrid(baseUrl, buttons, type){
 					popConfirm('确认删除用户['+record[0].userName+']？','user-mainBody');
 					$("#popConfirmYes").unbind('click');
 					$("#popConfirmYes").click(function (){
-						userDeleteById(user_delete_url,record[0]);
+						//userDeleteById(user_delete_url,record[0]);
 					});
 				}
 			}
@@ -133,6 +133,26 @@ function userDataGrid(baseUrl, buttons, type){
 			field : 'userMobTel',
 			title : '手机号码',
 			width : 150
+		}, {
+			field : 'createTime',
+			title : '申请时间',
+			width : 150
+		}, {
+			field : 'oper',
+			title : '操作',
+			width : 100,
+			align : 'center',
+			formatter : function(value, row, index) {
+				//停用时审批
+				if(!row.userStatus){
+					var str = '<span >';
+					str = str+ '<a href="#" onclick="appUserSta('+index+')" style="color:green" >审批</a>';
+					str = str +'</span>';
+					return str;
+				}else{
+					return '';
+				}
+			}	
 		} ] ]
 	};
 	var newBars = getAccessButton(initToolbar,buttons,type);
@@ -150,6 +170,7 @@ function userDataGrid(baseUrl, buttons, type){
 		$('#user-data-list').datagrid('load', serializeObject($('#userSearchForm')));
 	});
 	$('#userBtnClean').click(function(){// 全部
+		$('#userSearchForm').form('clear');
 		$('#user-data-list').datagrid('load', {});
 	});
 }
@@ -168,16 +189,13 @@ function userDataGrid(baseUrl, buttons, type){
 
 // 获取选中记录,弹出修改窗口
 function userSaveById(baseUrl,data){
-	//createBranchTree(baseUrl);
-	$.ajax(baseUrl + '/user/getById.do', {
+	$.ajax(baseUrl + '/user/getById.do?USER_ID='+data.userId, {
 		type:'post',
 		 	dataType:'json',
-		 	data:data,
 		 	success:function(result){
 		 		checkSession(result);
 		 		r1 = getBranchNameById(baseUrl, result.data);
 				$('#userEditForm').form('load',result.data);
-				//$('#userBranchTree').combotree('setText', r1.data);
 				if(result.data.userStatus){
 					$(':radio[name="userStatus"]').eq(0).attr("checked",true); // 设置第一个radio为选中
 				}else{
@@ -205,6 +223,15 @@ function userDeleteById(url,data){
 }
 // 新增\修改 提交
 function userSave(url){
+	reg = /(\.png|\.jpg|\.JPG|\.PNG)$/; 
+	if($('#imgFile').val() === ''){
+		popInfo('user-edit-error', '请上传收款二维码');
+		return false;
+	}
+	if(!reg.test($('#imgFile').val())){
+		popInfo('user-edit-error', '请选择jpg或png格式的二维码头像');
+		return false;
+	}
 	if($('#userEditForm').form('validate')){
 		$('#userEditForm').form('submit', {
 			url : url,
@@ -212,22 +239,7 @@ function userSave(url){
 				try {
 					var r = $.parseJSON(result);
 					if (r.success) {
-						if(r.type === 'insert'){
-							$('#user-data-list').datagrid('insertRow', {
-								index : 0,
-								row : r.data
-							});
-						}else if(r.type === 'update'){
-							var record = Utils.getCheckedRows($('#user-data-list'));
-							var data ={};
-							var idKey = 'userId'; // 主键名称
-		 					data[idKey] = (record[0][idKey]);
-		 					r.data.loginName = data.loginName;// loginName不允许修改的列
-							$('#user-data-list').datagrid('updateRow', {
-								index : $('#user-data-list').datagrid('getRowIndex', r.data.userId),
-								row : r.data
-							});
-						}
+						 $('#user-data-list').datagrid('reload');
 					}
 					popInfo('user-edit-info', r.message);
 				} catch (e) {
@@ -384,6 +396,30 @@ function userRoleSave(url,userId){
 			}
 		}, "json"
 	);
+}
+//审批
+function appUserSta(rowIndex){
+	var rows = $('#user-data-list').datagrid('getRows');
+	var row = rows[rowIndex];
+	console.info(row);
+	$.ajax(baseUrl + '/user/appUserSta.do?USER_ID='+row.userId, {
+		type:'post',
+		 	dataType:'json',
+		 	success:function(result){
+		 		console.info(result);
+		 		console.info(result.success);
+		 		try {
+					if (result.success) {
+						rollDown("imf_roll",'审批通过！');
+					}else{
+						rollDown("imf_roll",'审批失败！');
+					}
+					$('#user-data-list').datagrid('reload');
+				} catch (e) {
+					rollDown("imf_roll",'审批失败！');
+				}
+		 	}
+	});	
 }
 
 $(document).ready(function () {

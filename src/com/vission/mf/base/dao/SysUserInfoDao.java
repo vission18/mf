@@ -27,7 +27,7 @@ public class SysUserInfoDao extends
 
 	@Autowired
 	private NamedParameterJdbcTemplate namedParameterJdbcTemplate = null;
-	
+
 	public SysUserInfoDao() {
 		super(SysUserInfo.class);
 	}
@@ -83,56 +83,56 @@ public class SysUserInfoDao extends
 
 	/**
 	 * 判断是否存在此机构的用户
+	 * 
 	 * @param branchNos
 	 * @return
 	 */
-	public boolean existUsersByBranchNos(List<String> branchNos){
-		Map<String,List<String>> map=new HashMap<String,List<String>>();
+	public boolean existUsersByBranchNos(List<String> branchNos) {
+		Map<String, List<String>> map = new HashMap<String, List<String>>();
 		map.put("branchNos", branchNos);
-		StringBuffer sb=new StringBuffer("select count(");
-		sb.append(SYS_USER_INFO.USER_ID).append(") from ").append(SYS_USER_INFO.TABLE_NAME).append(" where ").append(SYS_USER_INFO.BRANCH_NO).append(" in( :branchNos )");
-		int result=namedParameterJdbcTemplate.queryForInt(sb.toString(), map);
-		if(result>0){
+		StringBuffer sb = new StringBuffer("select count(");
+		sb.append(SYS_USER_INFO.USER_ID).append(") from ")
+				.append(SYS_USER_INFO.TABLE_NAME).append(" where ")
+				.append(SYS_USER_INFO.BRANCH_NO).append(" in( :branchNos )");
+		int result = namedParameterJdbcTemplate.queryForInt(sb.toString(), map);
+		if (result > 0) {
 			return true;
-		}else{
+		} else {
 			return false;
 		}
 	}
-	
+
 	/**
-	 * 根据用户名查询用户
-	 * add by syh
+	 * 根据用户名查询用户 add by syh
+	 * 
 	 * @return
 	 */
 	public SysUserInfo getUserByUserName(String loginName) {
 		return findUniqueByProperty("loginName", loginName);
 	}
-	
+
 	/**
-	 * 根据用户登录名查询用户模糊查询
-	 * add by syh
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
 	public List<SysUserInfo> suggest(String word) {
-			StringBuffer sb = new StringBuffer();
-			sb.append("select t.* from ").append(SYS_USER_INFO.TABLE_NAME);
-			sb.append(" t");
-			sb.append(" where t.").append(SYS_USER_INFO.LOGIN_NAME);
-			sb.append(" like");
-			sb.append(" :loginName");
-			String loginName =word + "%";
-			MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource(
-					"loginName", loginName);
-			List<SysUserInfo> list = new ArrayList<SysUserInfo>();
-			list = namedParameterJdbcTemplate.query(sb.toString(),
-					mapSqlParameterSource, new ImsUserInfoRowMapper());
-			return list;
+		StringBuffer sb = new StringBuffer();
+		sb.append("select t.* from ").append(SYS_USER_INFO.TABLE_NAME);
+		sb.append(" t");
+		sb.append(" where t.").append(SYS_USER_INFO.LOGIN_NAME);
+		sb.append(" like");
+		sb.append(" :loginName");
+		String loginName = word + "%";
+		MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource(
+				"loginName", loginName);
+		List<SysUserInfo> list = new ArrayList<SysUserInfo>();
+		list = namedParameterJdbcTemplate.query(sb.toString(),
+				mapSqlParameterSource, new ImsUserInfoRowMapper());
+		return list;
 	}
-	
+
 	/**
-	 * 根据用户名查询用户模糊查询
-	 * add by syh
+	 * 
 	 * @return
 	 */
 	@SuppressWarnings("rawtypes")
@@ -148,7 +148,36 @@ public class SysUserInfoDao extends
 			info.setBranchNo(rs.getString(SYS_USER_INFO.BRANCH_NO));
 			info.setUserTel(rs.getString(SYS_USER_INFO.USER_TEL));
 			info.setUserMobTel(rs.getString(SYS_USER_INFO.USER_MOB_TEL));
+			info.setUserType(rs.getString(SYS_USER_INFO.USER_TYPE));
+			info.setParentUserId(rs.getString(SYS_USER_INFO.PRARENT_USER_ID));
+			info.setVxImgName(rs.getString(SYS_USER_INFO.VX_IMG_NAME));
+			info.setVxImgPath(rs.getString(SYS_USER_INFO.VX_IMG_PATH));
+			info.setCreateTime(rs.getString(SYS_USER_INFO.CREATE_TIME));
+			info.setCreateUser(rs.getString(SYS_USER_INFO.CREATE_USER));
+			info.setLastModTime(rs.getString(SYS_USER_INFO.LAST_MOD_TIME));
+			info.setLastModUser(rs.getString(SYS_USER_INFO.LAST_MOD_USER));
 			return info;
 		}
+	}
+	
+	/**
+	 * 获取一个对象
+	 * @param userId
+	 * @return
+	 */
+	public SysUserInfo getUserInfoByUserId(String userId) {
+		StringBuffer sql = new StringBuffer();
+		sql.append(" SELECT T1.* ");
+		sql.append(" FROM SYS_USER_INFO T1  ");
+		sql.append(" where 1=1 and t1.USER_ID = '" + userId + "'");
+		sql.append(" order by t1.CREATE_TIME desc  ");
+		MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
+		List<SysUserInfo> list = namedParameterJdbcTemplate.query(
+				sql.toString(), mapSqlParameterSource,
+				new ImsUserInfoRowMapper());
+		if (list == null || list.size() <= 0) {
+			return null;
+		}
+		return list.get(0);
 	}
 }

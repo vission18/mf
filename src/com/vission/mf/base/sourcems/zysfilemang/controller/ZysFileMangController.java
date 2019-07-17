@@ -31,6 +31,7 @@ import com.vission.mf.base.model.po.UploadExcel;
 import com.vission.mf.base.sourcems.zysfilemang.db.SMS_CODE_TABLE;
 import com.vission.mf.base.sourcems.zysfilemang.po.ZysFileMang;
 import com.vission.mf.base.sourcems.zysfilemang.service.ZysFileMangService;
+import com.vission.mf.base.util.ClassUtil;
 import com.vission.mf.base.util.DateUtil;
 import com.vission.mf.base.util.FileUtil;
 import com.vission.mf.base.util.RegexUtil;
@@ -76,17 +77,11 @@ public class ZysFileMangController extends BaseController {
 			pageSize = Integer.parseInt(request.getParameter("rows"));
 			String fileType = request.getParameter("fileTypeComm");
 			po.setFileType(fileType);
-			SessionInfo sessionInfo = (SessionInfo) session
-					.getAttribute(BaseConstants.USER_SESSION_KEY);
-			String userId = sessionInfo.getUser().getUserId();
-			if(!"admin".equals(userId)){
-				po.setCreateUser(userId);
-			}
 		} catch (Exception e) {
 			pageNo = 1;
 			pageSize = BaseConstants.MAX_PAGE_SIZE;
 		}
-		return zysFileManService.dataGrid(po, pageNo, pageSize);
+		return zysFileManService.dataGrid(session,po, pageNo, pageSize);
 	}
 
 	/**
@@ -166,7 +161,7 @@ public class ZysFileMangController extends BaseController {
 			if (fileInfo.getPkId() == null || "".equals(fileInfo.getPkId())) {
 				ajaxResult.setType(BaseConstants.OPER_TYPE_INSERT);// 初始化
 				this.zysFileManService.initFilePara(fileInfo);
-				fileInfo.setCreateUser(sessionInfo.getUser().getUserName());
+				fileInfo.setCreateUser(sessionInfo.getUser().getUserId());
 			} else {
 				//获取修改前的文件
 				ZysFileMang po = this.zysFileManService.getZysFileMangById(fileInfo.getPkId());
@@ -174,7 +169,7 @@ public class ZysFileMangController extends BaseController {
 					/*fileInfo.setFilePath(po.getFilePath());
 					fileInfo.setFileSize(po.getFileSize());*/
 					fileInfo.setLastModTime(DateUtil.getCurrentSystemTime());
-					fileInfo.setLastModUser(sessionInfo.getUser().getUserName());
+					fileInfo.setLastModUser(sessionInfo.getUser().getUserId());
 					fileInfo.setCreateTime(po.getCreateTime());
 					fileInfo.setCreateUser(po.getCreateUser());
 					fileInfo.setDownloadCount(po.getDownloadCount());
@@ -195,7 +190,7 @@ public class ZysFileMangController extends BaseController {
 		} catch (Exception e) {
 			ajaxResult.setSuccess(false);
 			ajaxResult.setMessage("文件保存异常，请联系管理员！");
-			throw new ServiceException("不存在的文件");
+			throw new ServiceException("保存失败："+e.getMessage());
 		}
 		return ajaxResult;
 	}
@@ -242,10 +237,15 @@ public class ZysFileMangController extends BaseController {
 			throw new ServiceException("下载失败，服务器压力过大，建议使用网盘下载");
 		}
 	}
-	
-	@RequestMapping(value = "/updateDownloadCount")
+	/**
+	 * 统计点击量、下次数、点赞量
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "/updateFileCount")
 	@ResponseBody
-	public AjaxResult updateDownloadCount(HttpServletRequest request,
+	public AjaxResult updateFileCount(HttpServletRequest request,
 			HttpServletResponse response) {
 		AjaxResult ajaxResult = new AjaxResult();
 		ajaxResult.setSuccess(true);
@@ -253,7 +253,24 @@ public class ZysFileMangController extends BaseController {
 			String pkId = request.getParameter("PK_ID");
 			ZysFileMang fileInfo = zysFileManService.getZysFileMangById(pkId);
 			if(fileInfo != null){
-				fileInfo.setDownloadCount(fileInfo.getDownloadCount()+1);
+				int countClick = ClassUtil.chcInt(request.getParameter("COUNT_CLICK"));
+				int countClickOndate = ClassUtil.chcInt(request.getParameter("COUNT_CLICK_ONDATE"));
+				
+				int countZan = ClassUtil.chcInt(request.getParameter("COUNT_ZAN"));
+				int countZanOndate = ClassUtil.chcInt(request.getParameter("COUNT_ZAN_ONDATE"));
+				
+				int countDownload = ClassUtil.chcInt(request.getParameter("DOWNLOAD_COUNT"));
+				int countDownloadOndate = ClassUtil.chcInt(request.getParameter("DOWNLOAD_COUNT_ONDATE"));
+				
+				fileInfo.setCountClick(fileInfo.getCountClick()+countClick);
+				fileInfo.setCountClickOndate(fileInfo.getCountClickOndate()+countClickOndate);
+				
+				fileInfo.setCountZan(fileInfo.getCountZan()+countZan);
+				fileInfo.setCountZanOndate(fileInfo.getCountZanOndate()+countZanOndate);
+				
+				fileInfo.setDownloadCount(fileInfo.getDownloadCount()+countDownload);
+				fileInfo.setDownloadCountOndate(fileInfo.getDownloadCountOndate()+countDownloadOndate);
+				
 				this.zysFileManService.saveZysFileMang(fileInfo);
 				try {
 					//保存日志
